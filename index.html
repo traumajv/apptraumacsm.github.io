@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Indicaciones Traumatología v3.1 (Portable)</title>
+  <style>
+/* =========================================================
+   Generador de Indicaciones Traumatología v3.1
+   Estilos con soporte para modo oscuro
+   ========================================================= */
+
+:root {
+  --primary: #0056b3;
+  --primary-hover: #004494;
+  --bg: #f4f7f6;
+  --card-bg: #ffffff;
+  --text: #333333;
+  --text-muted: #6c757d;
+  --border: #dddddd;
+  --result-bg: #fafafa;
+  --alert-bg: #e2e3e5;
+  --alert-text: #333333;
+  --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --highlight-bg: #fff3cd;
+  --favorite-color: #f59e0b;
+  --danger: #dc3545;
+}
+
+[data-theme="dark"] {
+  --primary: #4a9eff;
+  --primary-hover: #6bb1ff;
+  --bg: #1a1d23;
+  --card-bg: #252a32;
+  --text: #e4e6eb;
+  --text-muted: #9ca3af;
+  --border: #3a4049;
+  --result-bg: #1f232a;
+  --alert-bg: #2d333b;
+  --alert-text: #e4e6eb;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --highlight-bg: #4a3c1a;
+  --favorite-color: #fbbf24;
+  --danger: #f87171;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.theme-toggle, .icon-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.2s;
+}
+
+.theme-toggle:hover, .icon-btn:hover {
+  background: var(--alert-bg);
+}
+
+.card {
+  background: var(--card-bg);
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  transition: background 0.2s;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 10px;
+  font-size: 0.92em;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 0.95em;
+  font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
+.row { display: flex; gap: 15px; flex-wrap: wrap; }
+.col { flex: 1; min-width: 150px; }
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95em;
+  margin-top: 10px;
+  flex: 1;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+button:hover { background: var(--primary-hover); }
+button.secondary { background: var(--text-muted); }
+button.secondary:hover { background: #5a6268; }
+
+#resultado {
+  height: 320px;
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, monospace;
+  white-space: pre-wrap;
+  background-color: var(--result-bg);
+  font-size: 0.88em;
+}
+
+.alert {
+  padding: 10px 12px;
+  background-color: var(--alert-bg);
+  color: var(--alert-text);
+  border-radius: 6px;
+  font-size: 0.88em;
+  margin-top: 10px;
+}
+
+.mode-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.78em;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+.adult { background-color: #d4edda; color: #155724; }
+.pedia { background-color: #f8d7da; color: #721c24; }
+
+[data-theme="dark"] .adult { background-color: #1e4d2b; color: #a3e6b0; }
+[data-theme="dark"] .pedia { background-color: #5a1e25; color: #f5b3bb; }
+
+/* === Lista de protocolos === */
+.protocol-list {
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-top: 5px;
+  background: var(--card-bg);
+}
+
+.protocol-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s;
+}
+
+.protocol-item:last-child { border-bottom: none; }
+.protocol-item:hover { background: var(--alert-bg); }
+.protocol-item.selected {
+  background: var(--primary);
+  color: white;
+}
+.protocol-item.selected .item-cat { color: rgba(255,255,255,0.85); }
+
+.item-main { flex: 1; }
+.item-cat {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.item-label { font-weight: 500; margin-top: 2px; }
+
+.fav-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  margin: 0;
+  flex: 0 0 auto;
+  width: auto;
+}
+.fav-star:hover { background: transparent; transform: scale(1.2); }
+.fav-star.active { color: var(--favorite-color); }
+
+.section-divider {
+  padding: 6px 12px;
+  background: var(--alert-bg);
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* === Highlight para coincidencias === */
+mark {
+  background: var(--highlight-bg);
+  color: var(--text);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* === Historial === */
+.history-panel {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85em;
+}
+.history-item:hover { background: var(--alert-bg); }
+.history-item .hist-meta {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* === Atajos de teclado === */
+.shortcuts-hint {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.shortcuts-hint kbd {
+  background: var(--alert-bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
+/* === Toast === */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 1000;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+/* === Utilidades === */
+.hidden { display: none !important; }
+
+.collapsible-header {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.collapsible-header::after {
+  content: "▼";
+  font-size: 0.7em;
+  transition: transform 0.2s;
+}
+.collapsible-header.collapsed::after {
+  transform: rotate(-90deg);
+}
+
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  .row { flex-direction: column; }
+  .header h1 { font-size: 1.2em; }
+}
+
+</style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>🏥 Generador de Indicaciones Traumatología</h1>
+    <div class="header-actions">
+      <button id="btn-theme" class="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+        <span id="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="app-status"></div>
+
+  <!-- Datos del paciente -->
+  <div class="card">
+    <div class="row">
+      <div class="col">
+        <label for="nombre">Nombre paciente (opcional)</label>
+        <input type="text" id="nombre" placeholder="Nombre del paciente" autocomplete="off">
+      </div>
+      <div class="col" style="max-width: 160px;">
+        <label for="peso">Peso (kg)</label>
+        <input type="number" id="peso" placeholder="kg" min="0" step="0.1">
+      </div>
+    </div>
+    <div id="modo-indicator" class="alert">Esperando peso para determinar dosis...</div>
+  </div>
+
+  <!-- Búsqueda y selección de protocolo -->
+  <div class="card">
+    <label for="buscador">Buscar diagnóstico / procedimiento</label>
+    <input type="text" id="buscador" placeholder="Escribe 'tobillo', 'sutura', 'muñeca'..." autocomplete="off">
+
+    <div class="shortcuts-hint">
+      <span><kbd>↓ ↑</kbd> navegar</span>
+      <span><kbd>Enter</kbd> seleccionar</span>
+      <span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> copiar</span>
+      <span><kbd>Esc</kbd> limpiar</span>
+      <span><kbd>Ctrl</kbd>+<kbd>K</kbd> buscar</span>
+    </div>
+
+    <div id="protocol-list" class="protocol-list" role="listbox" aria-label="Lista de protocolos"></div>
+  </div>
+
+  <!-- Resultado -->
+  <div class="card">
+    <label for="resultado">Texto generado (editable antes de copiar)</label>
+    <textarea id="resultado" spellcheck="false"></textarea>
+    <div class="row">
+      <button id="btn-copiar">📋 Copiar al portapapeles</button>
+      <button id="btn-limpiar" class="secondary">🔄 Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="card">
+    <h3 id="history-toggle" class="collapsible-header collapsed" style="margin: 0;">
+      🕒 Historial reciente
+    </h3>
+    <div id="history-panel" class="history-panel hidden"></div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+/* =========================================================
+   Generador de Indicaciones Traumatología v3.1
+   Lógica principal - JavaScript modular
+   ========================================================= */
+
+// ======================== ESTADO GLOBAL ========================
+const STATE = {
+  data: null,            // Datos cargados del JSON
+  protocolos: [],        // Lista de protocolos
+  selectedId: null,      // ID seleccionado actualmente
+  filteredList: [],      // Lista filtrada actual
+  selectedIndex: -1,     // Índice seleccionado en navegación con teclado
+  favorites: [],         // IDs favoritos (persistidos)
+  usageCount: {},        // Conteo de uso por ID (persistido)
+  history: [],           // Historial de últimas indicaciones (persistido)
+  theme: 'light',        // 'light' o 'dark'
+};
+
+const STORAGE_KEYS = {
+  favorites: 'trauma_favorites',
+  usage: 'trauma_usage',
+  history: 'trauma_history',
+  theme: 'trauma_theme',
+};
+
+const PROTOCOLS_WITH_INLINE_CONTROLS = ['suturas', 'mordedura', 'dedo_esguince', 'muneca_esguince'];
+
+const FOOTER_NO_FRACTURE = `\n--- CONTROLES ESTÁNDAR ---\n
+- Control en convenio escolar en caso de persistir con síntomas por 2 semanas (solicitar hora antes). 
+- Control en servicio de urgencia en caso de necesidad o signos de alarma (fiebre, aumento de eritema, calor local, dolor o secreción).
+- Control con Dr. [Nombre del Médico] en [X] días (solo si el médico lo cree necesario).
+---------------------------------------------------\n`;
+
+// ======================== PERSISTENCIA ========================
+function loadFromStorage() {
+  try {
+    STATE.favorites = JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites) || '[]');
+    STATE.usageCount = JSON.parse(localStorage.getItem(STORAGE_KEYS.usage) || '{}');
+    STATE.history = JSON.parse(localStorage.getItem(STORAGE_KEYS.history) || '[]');
+    STATE.theme = localStorage.getItem(STORAGE_KEYS.theme) || 'light';
+  } catch (e) {
+    console.warn('Error cargando datos persistidos:', e);
+  }
+}
+
+function saveFavorites() { localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(STATE.favorites)); }
+function saveUsage() { localStorage.setItem(STORAGE_KEYS.usage, JSON.stringify(STATE.usageCount)); }
+function saveHistory() { localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(STATE.history)); }
+function saveTheme() { localStorage.setItem(STORAGE_KEYS.theme, STATE.theme); }
+
+// ======================== CARGA DE DATOS ========================
+async function loadData() {
+  // Datos embebidos directamente (sin fetch externo)
+  STATE.data = EMBEDDED_DATA;
+  STATE.protocolos = STATE.data.protocolos;
+}
+
+// Datos de protocolos embebidos
+const EMBEDDED_DATA = {
+  "version": "3.1.0",
+  "protocolos": [
+    {
+      "id": "hombro_general",
+      "cat": "Ext. Superior",
+      "label": "Hombro / Brazo General",
+      "isFracture": false,
+      "sinonimos": ["clavicula", "brazo", "deltoides"],
+      "text": "HOMBRO / CLAVICULA / BRAZO - GENERAL\n- Reposo relativo.\n- Uso de cabestrillo o inmovilizador de hombro por 7 días.\n- Movilizar hombro y codo dentro del rango indoloro.\n- Frío local 10–15 min cada 4 horas por 2–3 días.\n- Puede asistir a clases como oyente (sin escribir).\n- Reposo deportivo por 2–4 semanas según evolución.\n- Control en convenio o centro médico.\n- Consulta SOS en Urgencias si hay aumento del dolor o edema."
+    },
+    {
+      "id": "clavicula_fx",
+      "cat": "Ext. Superior",
+      "label": "Fractura Clavícula",
+      "isFracture": true,
+      "sinonimos": ["clavicula", "fractura clavicular"],
+      "text": "CLAVICULA FRACTURA\n- Reposo en casa 7 días.\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes.\n- Inmovilizador de hombro hasta control: Retirar para higiene y ejercicios de rango de movimiento codo, muñeca y dedos.\n- Control en convenio escolar 2 / 3 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "dedo_esguince",
+      "cat": "Ext. Superior",
+      "label": "Dedo (Esguince/Contusión)",
+      "isFracture": false,
+      "inlineControls": true,
+      "sinonimos": ["falange", "torcedura dedo"],
+      "text": "DEDO ESGUINCE/CONTUSIÓN\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 10 días (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MANO).\n- Férula digital / Embarrilado por 7 días (retirar en casa).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n\n--- CONTROLES ESPECÍFICOS ---\n- Control en convenio escolar en caso de persistir con síntomas por 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "dedo_fx",
+      "cat": "Ext. Superior",
+      "label": "Dedo (Fractura)",
+      "isFracture": true,
+      "sinonimos": ["falange fractura"],
+      "text": "DEDO FRACTURA\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MANO).\n- Férula digital corta dedo medio.\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Control en convenio escolar 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "metacarpianos",
+      "cat": "Ext. Superior",
+      "label": "Metacarpianos (Contusión/Esguince)",
+      "isFracture": false,
+      "sinonimos": ["mano contusion", "palma"],
+      "text": "METACARPIANOS (Contusión / Esguince)\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Reposo deportivo por 14 días (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN MANO).\n- Uso de muñequera por 10 días (retirar en casa)."
+    },
+    {
+      "id": "muneca_esguince",
+      "cat": "Ext. Superior",
+      "label": "Muñeca (Esguince)",
+      "isFracture": false,
+      "inlineControls": true,
+      "sinonimos": ["torcedura muñeca", "wrist"],
+      "text": "MUÑECA ESGUINCE\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 10 días (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MUÑECA-MANO).\n- Inmovilizador de muñeca / Tubigrip por 7 días (retirar en casa).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n\n--- CONTROLES ESPECÍFICOS ---\n- Control en convenio escolar en caso de persistir con síntomas por 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "muneca_fx",
+      "cat": "Ext. Superior",
+      "label": "Muñeca (Fractura)",
+      "isFracture": true,
+      "sinonimos": ["fractura muñeca", "colles"],
+      "text": "MUÑECA FRACTURA\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MUÑECA-MANO).\n- Inmovilizador de muñeca / Tubigrip por 7 días (retirar en casa).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Control en convenio escolar 2 / 3 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "antebrazo_fx",
+      "cat": "Ext. Superior",
+      "label": "Antebrazo (Fractura)",
+      "isFracture": true,
+      "sinonimos": ["radio", "cubito", "ulna"],
+      "text": "ANTEBRAZO FRACTURA\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes.\n- Yeso BP: no mojar ni manipular.\n- Control en convenio escolar 2 / 3 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "lumbago",
+      "cat": "Columna",
+      "label": "Lumbago Mecánico",
+      "isFracture": false,
+      "noMeds": true,
+      "sinonimos": ["dolor lumbar", "espalda baja"],
+      "text": "LUMBAGO MECANICO\n- Reposo relativo.\n- Calor local 10–15 min c/4 h por 3 días.\n- Control con Traumatólogo Columna (Dr. Reyes / Dr. Santelices)."
+    },
+    {
+      "id": "rodilla_esguince",
+      "cat": "Ext. Inferior",
+      "label": "Esguince Rodilla",
+      "isFracture": false,
+      "sinonimos": ["torcedura rodilla", "knee"],
+      "text": "RODILLA ESGUINCE\n- Reposo en casa 2 días con pierna en alto.\n- Reposo deportivo por 10 días.\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Tubigrip / Inmovilizador de rodilla por 7 días (retirar en domicilio)."
+    },
+    {
+      "id": "rodilla_trauma",
+      "cat": "Ext. Inferior",
+      "label": "Rodilla Traumática Aguda",
+      "isFracture": false,
+      "sinonimos": ["golpe rodilla", "contusion rodilla"],
+      "text": "RODILLA TRAUMATICA AGUDA\n- Reposo en casa 7 días con pierna en alto.\n- Reposo deportivo hasta control.\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Inmovilizador de rodilla: Retirar para higiene.\n- Control en convenio escolar 1 semana."
+    },
+    {
+      "id": "tobillo_esguince_1",
+      "cat": "Ext. Inferior",
+      "label": "Esguince Tobillo G1",
+      "isFracture": false,
+      "kinesio": true,
+      "sinonimos": ["torcedura tobillo", "ankle"],
+      "text": "TOBILLO ESGUINCE LEVE (GRADO 1)\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo por 10 días.\n- Tubigrip / Tobillera por 7 días (retirar en domicilio).\n- Frio local protegido, 10 min cada 4-6 hrs por 2 días."
+    },
+    {
+      "id": "tobillo_esguince_2",
+      "cat": "Ext. Inferior",
+      "label": "Esguince Tobillo G2",
+      "isFracture": false,
+      "kinesio": true,
+      "sinonimos": ["torcedura tobillo grado 2"],
+      "text": "TOBILLO ESGUINCE MODERADO (GRADO 2)\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo por 10 días.\n- Bota inmovilizadora por 7 días (retirar en domicilio).\n- Frio local protegido, 10 min cada 4-6 hrs por 2 días."
+    },
+    {
+      "id": "tobillo_fx",
+      "cat": "Ext. Inferior",
+      "label": "Fractura Tobillo",
+      "isFracture": true,
+      "sinonimos": ["fractura maleolar"],
+      "text": "TOBILLO FRACTURA\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo hasta nueva indicación médica.\n- Bota inmovilizadora: sacar para higiene y al dormir.\n- Frio local protegido, 10 min cada 4-6 hrs por 2 días.\n- Control en convenio escolar en 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
+    },
+    {
+      "id": "contusion",
+      "cat": "Otros",
+      "label": "Contusión / Golpe Leve",
+      "isFracture": false,
+      "sinonimos": ["golpe", "moreton"],
+      "text": "CONTUSION / GOLPE LEVE\n- Reposo deportivo por 1 semana.\n- Frio local protegido, 10 min cada 4 hrs por 2 días."
+    },
+    {
+      "id": "suturas",
+      "cat": "Otros",
+      "label": "Herida / Sutura",
+      "isFracture": false,
+      "noMeds": true,
+      "inlineControls": true,
+      "sinonimos": ["corte", "puntos"],
+      "text": "HERIDA / SUTURA\n- Reposo relativo, evitar esfuerzo físico por 7 días.\n- No mojar apósitos ni manipular vendaje.\n- Curación por enfermería en convenio escolar en 48hrs (control por enfermería).\n- Control médico en 7 días / Retiro de puntos.\n- Revisar Vacuna Antitetánica (especialmente si es herida con fierro o profunda).\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."
+    },
+    {
+      "id": "mordedura",
+      "cat": "Otros",
+      "label": "Mordedura / Infección",
+      "isFracture": false,
+      "needsAntibiotic": true,
+      "inlineControls": true,
+      "sinonimos": ["mordida", "perro", "gato", "infeccion herida"],
+      "text": "MORDEDURA / INFECCION\n- Reposo relativo, evitar esfuerzo físico por 7 días.\n- No mojar apósitos ni manipular vendaje.\n- Curación por enfermería en convenio escolar en 48hrs (control por enfermería).\n- Control médico en 7 días / Retiro de puntos.\n- Revisar Vacuna Antitetánica y Antirrábica según protocolo local.\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."
+    },
+    {
+      "id": "rx_normal",
+      "cat": "Otros",
+      "label": "RX Normal (Lipotimia/No trauma)",
+      "isFracture": false,
+      "noMeds": true,
+      "sinonimos": ["radiografia normal"],
+      "text": "RX NORMAL\n- Rx: No se aprecian signos sugerentes de lesión ósea aguda traumática.\n- Se sugiere consultar bajo su previsión lo antes posible por su cuadro médico que no corresponde a trauma (lipotimia)."
+    },
+    {
+      "id": "kinesio_tobillo",
+      "cat": "Kinesiología",
+      "label": "Kinesiología - Esguince Tobillo/Tendinopatía",
+      "isFracture": false,
+      "noMeds": true,
+      "sinonimos": ["fisioterapia", "rehabilitacion"],
+      "text": "Kinesioterapia motora x 10 sesiones:\n- Evaluación inicial.\n- Fisioterapia (US / UT / TENS).\n- Ejercicios terapéuticos, fortalecimiento TP/TTP, CHC, masoterapia y propiocepción.\n- Pauta domiciliaria."
+    }
+  ],
+  "formularioAdulto": {
+    "ANALGESICOS_AINES": [
+      "- Paracetamol 500 mg: 2 comprimidos cada 8 horas por 5 días.",
+      "- Ibuprofeno 400 mg: 1 comprimido cada 8 horas por 5 días.",
+      "- Celecoxib (Celedox, Celebra) 200 mg: 1 comprimido cada 12 horas por 5-7 días.",
+      "- Diclofenaco 25–50 mg: 1 comprimido cada 8 horas por 3 días.",
+      "- Xumadol 1 g: 1 comprimido cada 12 horas por 7 días.",
+      "- Doloten: 1 comprimido cada 8 horas por 7 días.",
+      "- Talflex 100mg: 1 comprimido cada 12 horas por 5 días.",
+      "- Talflex bi 150 mg: 1 comprimido cada 24 horas por 5 días.",
+      "- Kitadol 1 g: 1 comprimido cada 8 horas por 7 días.",
+      "- Ketorolaco 30mg: 1 comprimido sublingual SOS dolor agudo (con comidas).",
+      "- Tensiomax 5mg: 1 comprimido cada noche por 3 noches.",
+      "- Adorlan (25/25): 1 comp. cada 8 horas por 7 días, luego SOS."
+    ],
+    "ANTIBIOTICOS": [
+      "- Amoxicilina / Ácido clavulánico 875/125 mg: 1 comp. c/12 horas por 7 días.",
+      "- Cefadroxilo 500 mg: 1 comp. c/12 horas por 7 días (Alternativa)."
+    ],
+    "OTROS": [
+      "- Omeprazol 20 mg: 1 comp. al día por 7–30 días (Protector gástrico).",
+      "- Medrol 16 mg: 2 comp. en la mañana cada 24 h por 7 días (Corticoides).",
+      "- Prestat 75 mg: 1 comp. nocturno por 10 días (Dolor neuropático).",
+      "- Burten SL 30 mg: 1 comp. cada 12 horas por 2 días (Relajante muscular).",
+      "- Cortiprex 20 mg: 1 comp. c/12 horas por 5 días (luego suspender) (Corticoides)."
+    ]
+  },
+  "medicamentosPediatricos": {
+    "PARACETAMOL": {
+      "dosis_calculo": 15,
+      "rango_texto": "10-15",
+      "frecuencia_dosis": 8,
+      "susp_120_5ml": 120,
+      "susp_160_5ml": 160,
+      "gotas_100_ml": 100
+    },
+    "IBUPROFENO": {
+      "dosis_calculo": 10,
+      "rango_texto": "5-10",
+      "frecuencia_dosis": 8,
+      "susp_200_5ml": 200,
+      "susp_100_5ml": 100
+    },
+    "AMOXICLAV": {
+      "dosis_dia": 80,
+      "frecuencia_dia": 3,
+      "presentaciones_susp": [
+        { "amoxi_mg": 250, "volumen": 5, "nombre": "62,5/250 por 5ml" },
+        { "amoxi_mg": 500, "volumen": 5, "nombre": "125/500 por 5ml" },
+        { "amoxi_mg": 600, "volumen": 5, "nombre": "42,9/600 por 5ml (Alto ratio)" }
+      ]
+    },
+    "CEFADROXILO": {
+      "dosis_dia": 50,
+      "frecuencia_dia": 2,
+      "presentacion_susp": { "mg": 250, "volumen": 5, "nombre": "250mg/5ml" }
+    }
+  }
+}
+;
+
+// ======================== BÚSQUEDA INTELIGENTE ========================
+
+/**
+ * Normaliza texto: minúsculas, sin acentos, sin caracteres especiales
+ */
+function normalize(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Calcula distancia de Levenshtein (para tolerancia a typos)
+ */
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      const cost = b.charAt(i - 1) === a.charAt(j - 1) ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
+/**
+ * Puntúa coincidencia entre query y protocolo.
+ * Más alto = mejor coincidencia. 0 = sin coincidencia.
+ */
+function scoreMatch(queryNorm, proto) {
+  if (!queryNorm) return 1; // sin query, todos pasan
+  const haystack = normalize(`${proto.label} ${proto.cat} ${(proto.sinonimos || []).join(' ')}`);
+  const queryWords = queryNorm.split(' ').filter(Boolean);
+  let totalScore = 0;
+
+  for (const qw of queryWords) {
+    let bestWordScore = 0;
+    // Coincidencia exacta de substring (mejor)
+    if (haystack.includes(qw)) {
+      bestWordScore = qw.length >= 4 ? 100 : 80;
+      // Bonus si está al inicio del label
+      if (normalize(proto.label).startsWith(qw)) bestWordScore += 50;
+    } else if (qw.length >= 4) {
+      // Tolerancia a typos: buscar palabra similar
+      const words = haystack.split(' ');
+      for (const w of words) {
+        if (Math.abs(w.length - qw.length) > 2) continue;
+        const dist = levenshtein(qw, w);
+        const maxDist = qw.length <= 5 ? 1 : 2;
+        if (dist <= maxDist) {
+          const score = 60 - dist * 10;
+          if (score > bestWordScore) bestWordScore = score;
+        }
+      }
+    }
+    if (bestWordScore === 0) return 0; // si una palabra no matchea, descarta
+    totalScore += bestWordScore;
+  }
+  return totalScore;
+}
+
+/**
+ * Resalta coincidencias en el texto mostrado (HTML seguro)
+ */
+function highlightMatches(text, queryNorm) {
+  if (!queryNorm) return escapeHtml(text);
+  const queryWords = queryNorm.split(' ').filter(w => w.length >= 2);
+  let safe = escapeHtml(text);
+  for (const qw of queryWords) {
+    const regex = new RegExp(`(${escapeRegex(qw)})`, 'gi');
+    safe = safe.replace(regex, '<mark>$1</mark>');
+  }
+  return safe;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// ======================== RENDERIZADO DE LISTA ========================
+function renderList(query = '') {
+  const list = document.getElementById('protocol-list');
+  const queryNorm = normalize(query);
+
+  // Calcular scores y filtrar
+  const scored = STATE.protocolos
+    .map(p => ({ proto: p, score: scoreMatch(queryNorm, p) }))
+    .filter(x => x.score > 0);
+
+  // Ordenar por score descendente, luego alfabético
+  scored.sort((a, b) => b.score - a.score || a.proto.label.localeCompare(b.proto.label));
+
+  STATE.filteredList = scored.map(x => x.proto);
+
+  // Construir secciones: si hay query, solo lista plana ordenada por relevancia
+  // Si NO hay query, mostrar Favoritos + Más usados + Todos por categoría
+  let html = '';
+
+  if (!queryNorm) {
+    // === Sección Favoritos ===
+    const favProtos = STATE.favorites
+      .map(id => STATE.protocolos.find(p => p.id === id))
+      .filter(Boolean);
+    if (favProtos.length > 0) {
+      html += `<div class="section-divider">⭐ Favoritos</div>`;
+      html += favProtos.map(p => itemHtml(p, queryNorm)).join('');
+    }
+
+    // === Sección Más usados ===
+    const usedIds = Object.keys(STATE.usageCount)
+      .filter(id => !STATE.favorites.includes(id))
+      .sort((a, b) => STATE.usageCount[b] - STATE.usageCount[a])
+      .slice(0, 5);
+    const usedProtos = usedIds.map(id => STATE.protocolos.find(p => p.id === id)).filter(Boolean);
+    if (usedProtos.length > 0) {
+      html += `<div class="section-divider">🔥 Más usados</div>`;
+      html += usedProtos.map(p => itemHtml(p, queryNorm)).join('');
+    }
+
+    // === Sección Todos (sin duplicar favoritos/usados) ===
+    const shownIds = new Set([...STATE.favorites, ...usedIds]);
+    const others = STATE.filteredList.filter(p => !shownIds.has(p.id));
+    if (others.length > 0) {
+      if (favProtos.length > 0 || usedProtos.length > 0) {
+        html += `<div class="section-divider">Todos los protocolos</div>`;
+      }
+      html += others.map(p => itemHtml(p, queryNorm)).join('');
+    }
+  } else {
+    // Con búsqueda: lista plana ordenada por relevancia
+    if (STATE.filteredList.length === 0) {
+      html = `<div class="empty-state">Sin coincidencias para "${escapeHtml(query)}"</div>`;
+    } else {
+      html = STATE.filteredList.map(p => itemHtml(p, queryNorm)).join('');
+    }
+  }
+
+  list.innerHTML = html;
+
+  // Reaplicar selección si corresponde
+  STATE.selectedIndex = -1;
+  if (STATE.selectedId) {
+    const idx = STATE.filteredList.findIndex(p => p.id === STATE.selectedId);
+    if (idx >= 0) {
+      STATE.selectedIndex = idx;
+      highlightSelected();
+    }
+  }
+}
+
+function itemHtml(proto, queryNorm) {
+  const isFav = STATE.favorites.includes(proto.id);
+  const isSelected = STATE.selectedId === proto.id;
+  return `
+    <div class="protocol-item ${isSelected ? 'selected' : ''}" data-id="${proto.id}">
+      <div class="item-main">
+        <div class="item-cat">${escapeHtml(proto.cat)}</div>
+        <div class="item-label">${highlightMatches(proto.label, queryNorm)}</div>
+      </div>
+      <button class="fav-star ${isFav ? 'active' : ''}" data-fav="${proto.id}" title="Marcar como favorito" aria-label="Favorito">
+        ${isFav ? '★' : '☆'}
+      </button>
+    </div>`;
+}
+
+function highlightSelected() {
+  document.querySelectorAll('.protocol-item').forEach(el => {
+    el.classList.toggle('selected', el.dataset.id === STATE.selectedId);
+  });
+  // Scroll into view
+  const sel = document.querySelector('.protocol-item.selected');
+  if (sel) sel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// ======================== CÁLCULO DE MEDICAMENTOS ========================
+function getAntibioticsPediatric(peso) {
+  const meds = STATE.data.medicamentosPediatricos;
+  const AC = meds.AMOXICLAV;
+  const C = meds.CEFADROXILO;
+
+  let r = `INDICACIÓN ANTIBIÓTICA (PEDIÁTRICO - ${peso} kg):\n-------------------------------------------\n`;
+
+  r += `1. Amoxicilina / Ácido clavulánico (Opción Principal):\n`;
+  const dosisDiariaAC = AC.dosis_dia * peso;
+  const dosisTomaAC = Math.round(dosisDiariaAC / AC.frecuencia_dia);
+  r += `   - Dosis por toma: ${dosisTomaAC} mg c/8 hrs VO por 7 días (${AC.dosis_dia} mg/kg/día).\n\n`;
+
+  AC.presentaciones_susp.forEach(pres => {
+    const conc = pres.amoxi_mg / pres.volumen;
+    const ml = Math.round((dosisTomaAC / conc) * 10) / 10;
+    r += `      - Suspensión ${pres.nombre}: **${ml} ml** c/8 hrs VO por 7 días.\n`;
+  });
+
+  r += `\n2. Cefadroxilo (Alternativa):\n`;
+  r += `   (Dosis: 30-50 mg/kg/día - Calculada a ${C.dosis_dia} mg/kg/día)\n`;
+  const dosisDiariaC = C.dosis_dia * peso;
+  const dosisTomaC = Math.round(dosisDiariaC / C.frecuencia_dia);
+  r += `   - Dosis por toma: ${dosisTomaC} mg c/12 hrs VO por 7 días.\n`;
+  const concC = C.presentacion_susp.mg / C.presentacion_susp.volumen;
+  const mlC = Math.round((dosisTomaC / concC) * 10) / 10;
+  r += `      - Suspensión ${C.presentacion_susp.nombre}: **${mlC} ml** c/12 hrs VO por 7 días.\n`;
+
+  return r;
+}
+
+function getMedicamentos(peso) {
+  const esPediatrico = peso > 0 && peso < 40;
+  const meds = STATE.data.medicamentosPediatricos;
+
+  if (esPediatrico) {
+    const P = meds.PARACETAMOL;
+    const I = meds.IBUPROFENO;
+    let r = `INDICACIÓN FARMACÉUTICA (PEDIÁTRICO - ${peso} kg):\n-------------------------------------------\n`;
+
+    const dosisP = P.dosis_calculo * peso;
+    r += `1. Paracetamol (Dosis: ${P.rango_texto} mg/kg/dosis - Calculada a ${P.dosis_calculo} mg/kg):\n`;
+    r += `   - Dosis por toma: ${Math.round(dosisP)} mg c/${P.frecuencia_dosis} hrs.\n`;
+
+    const ml120 = Math.round((dosisP / (P.susp_120_5ml / 5)) * 10) / 10;
+    r += `   - Suspensión 120mg/5ml: **${ml120} ml** c/${P.frecuencia_dosis} hrs VO por 5 días.\n`;
+    const ml160 = Math.round((dosisP / (P.susp_160_5ml / 5)) * 10) / 10;
+    r += `   - Suspensión 160mg/5ml: **${ml160} ml** c/${P.frecuencia_dosis} hrs VO por 5 días. (Opción alternativa)\n`;
+    const mlGotas = Math.round((dosisP / P.gotas_100_ml) * 10) / 10;
+    const gotas = Math.round(mlGotas * 20);
+    r += `   - Gotas 100mg/ml: **${gotas} gotas** (${mlGotas} ml) c/${P.frecuencia_dosis} hrs VO.\n\n`;
+
+    const dosisI = I.dosis_calculo * peso;
+    r += `2. Ibuprofeno (Dosis: ${I.rango_texto} mg/kg/dosis - Calculada a ${I.dosis_calculo} mg/kg):\n`;
+    r += `   - Dosis por toma: ${Math.round(dosisI)} mg c/${I.frecuencia_dosis} hrs.\n`;
+    const ml200 = Math.round((dosisI / (I.susp_200_5ml / 5)) * 10) / 10;
+    r += `   - Suspensión 200mg/5ml (Forte): **${ml200} ml** c/${I.frecuencia_dosis} hrs VO por 3 días. (Opción alternativa)\n`;
+    const ml100 = Math.round((dosisI / (I.susp_100_5ml / 5)) * 10) / 10;
+    r += `   - Suspensión 100mg/5ml (Estándar): **${ml100} ml** c/${I.frecuencia_dosis} hrs VO por 3 días.\n`;
+    r += `\n--- ADVERTENCIA: Usar Paracetamol e Ibuprofeno de forma alternada (separados por 4 horas) en caso de dolor persistente. ---`;
+    return r;
+  }
+
+  if (peso >= 40) {
+    const f = STATE.data.formularioAdulto;
+    let r = `INDICACIÓN FARMACÉUTICA (ADULTO - ${peso} kg):\n-------------------------------------------\n`;
+    r += `- - - ANALGÉSICOS / ANTIINFLAMATORIOS - - -\n`;
+    r += f.ANALGESICOS_AINES.join('\n') + '\n';
+    r += `- - - OTROS MEDICAMENTOS DE APOYO - - -\n`;
+    r += f.OTROS.join('\n');
+    return r;
+  }
+
+  return `[INGRESE PESO PARA VER DOSIS DE MEDICAMENTOS]`;
+}
+
+// ======================== GENERACIÓN DE TEXTO ========================
+function generarTexto() {
+  const peso = parseFloat(document.getElementById('peso').value);
+  const nombre = document.getElementById('nombre').value;
+  const idProto = STATE.selectedId;
+  const modoIndicator = document.getElementById('modo-indicator');
+  const resultadoTextarea = document.getElementById('resultado');
+
+  // Indicador de modo
+  if (!peso || peso <= 0) {
+    modoIndicator.innerHTML = 'Ingrese peso para calcular medicamentos.';
+  } else if (peso < 40) {
+    modoIndicator.innerHTML = `<span class="mode-badge pedia">Modo Pediátrico</span> Calculando dosis de Paracetamol 15mg/kg e Ibuprofeno 10mg/kg.`;
+  } else {
+    modoIndicator.innerHTML = `<span class="mode-badge adult">Modo Adulto</span> Cargando formulario completo de medicamentos.`;
+  }
+
+  if (!idProto) {
+    resultadoTextarea.value = 'Seleccione un protocolo para generar las indicaciones.';
+    return;
+  }
+
+  const protocolo = STATE.protocolos.find(p => p.id === idProto);
+  if (!protocolo) return;
+
+  const esPediatrico = peso > 0 && peso < 40;
+  const esAdulto = peso >= 40;
+
+  let texto = `PACIENTE: ${nombre || '___________________'}\n`;
+  if (peso) texto += `PESO: ${peso} kg\n`;
+  texto += `FECHA: ${new Date().toLocaleDateString()}\n`;
+  texto += `---------------------------------------------------\n`;
+  texto += protocolo.text + '\n\n';
+
+  // Antibióticos para mordedura
+  if (idProto === 'mordedura' && peso > 0) {
+    texto += '===================================================\n';
+    texto += 'INDICACIÓN DE ANTIBIÓTICO PARA MORDEDURAS/HERIDAS:\n';
+    if (esPediatrico) {
+      texto += getAntibioticsPediatric(peso);
+    } else if (esAdulto) {
+      texto += STATE.data.formularioAdulto.ANTIBIOTICOS.join('\n');
+    }
+    texto += '\n';
+  }
+
+  // Kinesioterapia para esguinces de tobillo
+  if (protocolo.kinesio) {
+    const kine = STATE.protocolos.find(p => p.id === 'kinesio_tobillo');
+    if (kine) {
+      texto += '===================================================\n';
+      texto += 'SOLICITUD DE KINESIOTERAPIA ASOCIADA:\n';
+      texto += kine.text + '\n\n';
+    }
+  }
+
+  // Medicamentos generales (si aplica)
+  if (!protocolo.noMeds && peso > 0 && idProto !== 'mordedura') {
+    texto += '---------------------------------------------------\n';
+    texto += getMedicamentos(peso) + '\n';
+  }
+
+  // Footer estándar para no fracturas sin controles inline
+  if (protocolo.isFracture === false && !PROTOCOLS_WITH_INLINE_CONTROLS.includes(idProto) && !protocolo.inlineControls) {
+    texto += FOOTER_NO_FRACTURE;
+  }
+
+  resultadoTextarea.value = texto;
+}
+
+// ======================== ACCIONES ========================
+function selectProtocol(id) {
+  STATE.selectedId = id;
+  STATE.usageCount[id] = (STATE.usageCount[id] || 0) + 1;
+  saveUsage();
+  highlightSelected();
+  generarTexto();
+}
+
+function toggleFavorite(id) {
+  const idx = STATE.favorites.indexOf(id);
+  if (idx >= 0) {
+    STATE.favorites.splice(idx, 1);
+    showToast('Quitado de favoritos');
+  } else {
+    STATE.favorites.push(id);
+    showToast('Agregado a favoritos ⭐');
+  }
+  saveFavorites();
+  renderList(document.getElementById('buscador').value);
+}
+
+function copiarTexto() {
+  const ta = document.getElementById('resultado');
+  if (!ta.value || ta.value.startsWith('Seleccione')) {
+    showToast('No hay nada que copiar');
+    return;
+  }
+  navigator.clipboard.writeText(ta.value).then(() => {
+    showToast('📋 Copiado al portapapeles');
+    addToHistory(ta.value);
+  }).catch(() => {
+    // Fallback para navegadores antiguos
+    ta.select();
+    document.execCommand('copy');
+    showToast('📋 Copiado');
+    addToHistory(ta.value);
+  });
+}
+
+function limpiar() {
+  document.getElementById('nombre').value = '';
+  document.getElementById('peso').value = '';
+  document.getElementById('buscador').value = '';
+  document.getElementById('resultado').value = '';
+  STATE.selectedId = null;
+  renderList('');
+  generarTexto();
+  document.getElementById('buscador').focus();
+}
+
+function addToHistory(texto) {
+  const proto = STATE.protocolos.find(p => p.id === STATE.selectedId);
+  STATE.history.unshift({
+    id: STATE.selectedId,
+    label: proto ? proto.label : 'Sin protocolo',
+    timestamp: Date.now(),
+    preview: texto.split('\n').slice(0, 4).join('\n'),
+    fullText: texto,
+  });
+  STATE.history = STATE.history.slice(0, 20);
+  saveHistory();
+  renderHistory();
+}
+
+function renderHistory() {
+  const panel = document.getElementById('history-panel');
+  if (!panel) return;
+  if (STATE.history.length === 0) {
+    panel.innerHTML = '<div class="empty-state">Sin historial aún. Las indicaciones que copies aparecerán aquí.</div>';
+    return;
+  }
+  panel.innerHTML = STATE.history.map((h, i) => {
+    const date = new Date(h.timestamp);
+    const fecha = date.toLocaleDateString() + ' ' + date.toLocaleTimeString().slice(0, 5);
+    return `
+      <div class="history-item" data-hist-idx="${i}">
+        <div><strong>${escapeHtml(h.label)}</strong></div>
+        <div class="hist-meta">${fecha}</div>
+      </div>`;
+  }).join('');
+}
+
+function loadFromHistory(idx) {
+  const item = STATE.history[idx];
+  if (!item) return;
+  document.getElementById('resultado').value = item.fullText;
+  showToast('Indicación cargada desde historial');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+// ======================== TEMA ========================
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', STATE.theme);
+  document.getElementById('theme-icon').textContent = STATE.theme === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  STATE.theme = STATE.theme === 'dark' ? 'light' : 'dark';
+  saveTheme();
+  applyTheme();
+}
+
+// ======================== ATAJOS DE TECLADO ========================
+function setupKeyboardShortcuts() {
+  const buscador = document.getElementById('buscador');
+
+  document.addEventListener('keydown', e => {
+    // Ctrl/Cmd + Enter: copiar
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      copiarTexto();
+      return;
+    }
+    // Ctrl/Cmd + K o Ctrl/Cmd + F: foco al buscador
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'f')) {
+      e.preventDefault();
+      buscador.focus();
+      buscador.select();
+      return;
+    }
+    // Esc: limpiar (solo si no estamos editando el resultado)
+    if (e.key === 'Escape' && document.activeElement.id !== 'resultado') {
+      e.preventDefault();
+      limpiar();
+      return;
+    }
+  });
+
+  // Navegación con flechas dentro del buscador
+  buscador.addEventListener('keydown', e => {
+    if (!['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) return;
+    e.preventDefault();
+
+    if (STATE.filteredList.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      STATE.selectedIndex = Math.min(STATE.selectedIndex + 1, STATE.filteredList.length - 1);
+    } else if (e.key === 'ArrowUp') {
+      STATE.selectedIndex = Math.max(STATE.selectedIndex - 1, 0);
+    } else if (e.key === 'Enter') {
+      if (STATE.selectedIndex < 0) STATE.selectedIndex = 0;
+    }
+
+    const proto = STATE.filteredList[STATE.selectedIndex];
+    if (proto) selectProtocol(proto.id);
+  });
+}
+
+// ======================== EVENT WIRING ========================
+function setupEventListeners() {
+  document.getElementById('buscador').addEventListener('input', e => {
+    renderList(e.target.value);
+  });
+
+  document.getElementById('peso').addEventListener('input', generarTexto);
+  document.getElementById('nombre').addEventListener('input', generarTexto);
+
+  document.getElementById('protocol-list').addEventListener('click', e => {
+    const favBtn = e.target.closest('[data-fav]');
+    if (favBtn) {
+      e.stopPropagation();
+      toggleFavorite(favBtn.dataset.fav);
+      return;
+    }
+    const item = e.target.closest('.protocol-item');
+    if (item) selectProtocol(item.dataset.id);
+  });
+
+  document.getElementById('btn-copiar').addEventListener('click', copiarTexto);
+  document.getElementById('btn-limpiar').addEventListener('click', limpiar);
+  document.getElementById('btn-theme').addEventListener('click', toggleTheme);
+
+  // Historial
+  document.getElementById('history-toggle').addEventListener('click', e => {
+    e.target.classList.toggle('collapsed');
+    document.getElementById('history-panel').classList.toggle('hidden');
+  });
+
+  document.getElementById('history-panel').addEventListener('click', e => {
+    const item = e.target.closest('[data-hist-idx]');
+    if (item) loadFromHistory(parseInt(item.dataset.histIdx));
+  });
+}
+
+// ======================== INICIALIZACIÓN ========================
+async function init() {
+  loadFromStorage();
+  applyTheme();
+  await loadData();
+  renderList('');
+  renderHistory();
+  setupEventListeners();
+  setupKeyboardShortcuts();
+  generarTexto();
+  document.getElementById('buscador').focus();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+</script>
+</body>
+</html>
