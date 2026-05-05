@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Indicaciones Traumatología v3.1 (Portable)</title>
+  <title>Generador de Indicaciones Traumatología v3.2</title>
   <style>
 /* =========================================================
-   Generador de Indicaciones Traumatología v3.1
-   Estilos con soporte para modo oscuro
+   Generador de Indicaciones Traumatología v3.2
+   Estilos con soporte para modo oscuro, tabs y módulos extra
    ========================================================= */
 
 :root {
@@ -25,6 +25,8 @@
   --highlight-bg: #fff3cd;
   --favorite-color: #f59e0b;
   --danger: #dc3545;
+  --success: #28a745;
+  --info: #17a2b8;
 }
 
 [data-theme="dark"] {
@@ -42,6 +44,8 @@
   --highlight-bg: #4a3c1a;
   --favorite-color: #fbbf24;
   --danger: #f87171;
+  --success: #34d399;
+  --info: #38bdf8;
 }
 
 * { box-sizing: border-box; }
@@ -51,7 +55,7 @@ body {
   background: var(--bg);
   color: var(--text);
   padding: 20px;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   transition: background 0.2s, color 0.2s;
 }
@@ -65,16 +69,8 @@ body {
   gap: 10px;
 }
 
-.header h1 {
-  margin: 0;
-  font-size: 1.5em;
-}
-
-.header-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.header h1 { margin: 0; font-size: 1.5em; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
 
 .theme-toggle, .icon-btn {
   background: var(--card-bg);
@@ -86,10 +82,7 @@ body {
   font-size: 0.9em;
   transition: background 0.2s;
 }
-
-.theme-toggle:hover, .icon-btn:hover {
-  background: var(--alert-bg);
-}
+.theme-toggle:hover, .icon-btn:hover { background: var(--alert-bg); }
 
 .card {
   background: var(--card-bg);
@@ -118,7 +111,6 @@ input, select, textarea {
   font-size: 0.95em;
   font-family: inherit;
 }
-
 input:focus, select:focus, textarea:focus {
   outline: 2px solid var(--primary);
   outline-offset: 1px;
@@ -141,13 +133,12 @@ button {
   font-weight: 500;
   transition: background 0.2s;
 }
-
 button:hover { background: var(--primary-hover); }
 button.secondary { background: var(--text-muted); }
 button.secondary:hover { background: #5a6268; }
 
 #resultado {
-  height: 320px;
+  height: 360px;
   font-family: ui-monospace, "SF Mono", Menlo, Monaco, monospace;
   white-space: pre-wrap;
   background-color: var(--result-bg);
@@ -174,13 +165,47 @@ button.secondary:hover { background: #5a6268; }
 }
 .adult { background-color: #d4edda; color: #155724; }
 .pedia { background-color: #f8d7da; color: #721c24; }
-
 [data-theme="dark"] .adult { background-color: #1e4d2b; color: #a3e6b0; }
 [data-theme="dark"] .pedia { background-color: #5a1e25; color: #f5b3bb; }
 
+/* === TABS === */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--border);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 10px 16px;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-weight: 500;
+  border-radius: 6px 6px 0 0;
+  flex: 0 0 auto;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.tab-btn:hover {
+  background: var(--alert-bg);
+  color: var(--text);
+}
+.tab-btn.active {
+  background: var(--card-bg);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
 /* === Lista de protocolos === */
 .protocol-list {
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -198,13 +223,9 @@ button.secondary:hover { background: #5a6268; }
   gap: 10px;
   transition: background 0.15s;
 }
-
 .protocol-item:last-child { border-bottom: none; }
 .protocol-item:hover { background: var(--alert-bg); }
-.protocol-item.selected {
-  background: var(--primary);
-  color: white;
-}
+.protocol-item.selected { background: var(--primary); color: white; }
 .protocol-item.selected .item-cat { color: rgba(255,255,255,0.85); }
 
 .item-main { flex: 1; }
@@ -217,15 +238,9 @@ button.secondary:hover { background: #5a6268; }
 .item-label { font-weight: 500; margin-top: 2px; }
 
 .fav-star {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2em;
-  color: var(--text-muted);
-  padding: 4px 8px;
-  margin: 0;
-  flex: 0 0 auto;
-  width: auto;
+  background: none; border: none; cursor: pointer;
+  font-size: 1.2em; color: var(--text-muted);
+  padding: 4px 8px; margin: 0; flex: 0 0 auto; width: auto;
 }
 .fav-star:hover { background: transparent; transform: scale(1.2); }
 .fav-star.active { color: var(--favorite-color); }
@@ -248,7 +263,6 @@ button.secondary:hover { background: #5a6268; }
   font-style: italic;
 }
 
-/* === Highlight para coincidencias === */
 mark {
   background: var(--highlight-bg);
   color: var(--text);
@@ -256,12 +270,72 @@ mark {
   border-radius: 2px;
 }
 
+/* === Combos farmacológicos === */
+.combos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.combo-card {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.combo-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+.combo-card.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+.combo-card.selected .combo-desc { color: rgba(255,255,255,0.85); }
+.combo-label {
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-bottom: 4px;
+}
+.combo-desc {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* === Botones de módulos extra (hospitalización, sutura, EV) === */
+.module-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.module-btn {
+  flex: 0 0 auto;
+  background: var(--bg);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  padding: 8px 14px;
+  font-size: 0.88em;
+  margin: 0;
+}
+.module-btn:hover { border-color: var(--primary); background: var(--alert-bg); }
+.module-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
 /* === Historial === */
 .history-panel {
   max-height: 200px;
   overflow-y: auto;
 }
-
 .history-item {
   padding: 8px 10px;
   border-bottom: 1px solid var(--border);
@@ -275,7 +349,7 @@ mark {
   margin-top: 2px;
 }
 
-/* === Atajos de teclado === */
+/* === Atajos === */
 .shortcuts-hint {
   font-size: 0.8em;
   color: var(--text-muted);
@@ -314,7 +388,6 @@ mark {
   transform: translateX(-50%) translateY(-5px);
 }
 
-/* === Utilidades === */
 .hidden { display: none !important; }
 
 .collapsible-header {
@@ -333,10 +406,20 @@ mark {
   transform: rotate(-90deg);
 }
 
+.section-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 16px 0 6px 0;
+}
+
 @media (max-width: 600px) {
   body { padding: 10px; }
   .row { flex-direction: column; }
   .header h1 { font-size: 1.2em; }
+  .combos-grid { grid-template-columns: 1fr; }
 }
 
 </style>
@@ -354,7 +437,7 @@ mark {
 
   <div id="app-status"></div>
 
-  <!-- Datos del paciente -->
+  <!-- Datos del paciente (siempre visible) -->
   <div class="card">
     <div class="row">
       <div class="col">
@@ -369,20 +452,63 @@ mark {
     <div id="modo-indicator" class="alert">Esperando peso para determinar dosis...</div>
   </div>
 
-  <!-- Búsqueda y selección de protocolo -->
+  <!-- Tabs principales -->
   <div class="card">
-    <label for="buscador">Buscar diagnóstico / procedimiento</label>
-    <input type="text" id="buscador" placeholder="Escribe 'tobillo', 'sutura', 'muñeca'..." autocomplete="off">
-
-    <div class="shortcuts-hint">
-      <span><kbd>↓ ↑</kbd> navegar</span>
-      <span><kbd>Enter</kbd> seleccionar</span>
-      <span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> copiar</span>
-      <span><kbd>Esc</kbd> limpiar</span>
-      <span><kbd>Ctrl</kbd>+<kbd>K</kbd> buscar</span>
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="patologia" role="tab">🦴 Patología</button>
+      <button class="tab-btn" data-tab="hospitalizacion" role="tab">🛌 Hospitalización</button>
+      <button class="tab-btn" data-tab="sutura" role="tab">✂️ Sutura</button>
+      <button class="tab-btn" data-tab="analgesia-ev" role="tab">💉 Analgesia EV</button>
     </div>
 
-    <div id="protocol-list" class="protocol-list" role="listbox" aria-label="Lista de protocolos"></div>
+    <!-- TAB: PATOLOGÍA -->
+    <div id="tab-patologia" class="tab-content active">
+      <label for="buscador">Buscar diagnóstico / procedimiento</label>
+      <input type="text" id="buscador" placeholder="Escribe 'tobillo', 'lumbago', 'pulgar'..." autocomplete="off">
+
+      <div class="shortcuts-hint">
+        <span><kbd>↓ ↑</kbd> navegar</span>
+        <span><kbd>Enter</kbd> seleccionar</span>
+        <span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> copiar</span>
+        <span><kbd>Esc</kbd> limpiar</span>
+        <span><kbd>Ctrl</kbd>+<kbd>K</kbd> buscar</span>
+      </div>
+
+      <div id="protocol-list" class="protocol-list" role="listbox" aria-label="Lista de protocolos"></div>
+
+      <!-- Combos farmacológicos para adultos -->
+      <div id="combos-section" class="hidden">
+        <div class="section-title">💊 Combo farmacológico (adulto)</div>
+        <div id="combos-grid" class="combos-grid"></div>
+      </div>
+    </div>
+
+    <!-- TAB: HOSPITALIZACIÓN -->
+    <div id="tab-hospitalizacion" class="tab-content">
+      <div class="section-title">Esquema de hospitalización</div>
+      <div id="hospi-buttons" class="module-buttons"></div>
+      <div class="alert" style="margin-top: 12px;">
+        💡 Selecciona un esquema para que aparezca en el área de resultado.
+      </div>
+    </div>
+
+    <!-- TAB: SUTURA -->
+    <div id="tab-sutura" class="tab-content">
+      <div class="section-title">Bloques de sutura (puedes seleccionar uno o ambos)</div>
+      <div id="sutura-buttons" class="module-buttons"></div>
+      <div class="alert" style="margin-top: 12px;">
+        💡 El "Protocolo de procedimiento" describe la técnica realizada. Las "Indicaciones post-sutura" son para entregar al paciente.
+      </div>
+    </div>
+
+    <!-- TAB: ANALGESIA EV -->
+    <div id="tab-analgesia-ev" class="tab-content">
+      <div class="section-title">Esquema de analgesia endovenosa</div>
+      <div id="ev-buttons" class="module-buttons"></div>
+      <div class="alert" style="margin-top: 12px;">
+        💡 La opción pediátrica calcula automáticamente las dosis si ingresaste el peso del paciente.
+      </div>
+    </div>
   </div>
 
   <!-- Resultado -->
@@ -407,22 +533,29 @@ mark {
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
+const EMBEDDED_DATA = {"version":"3.2.0","categorias":["Hombro / Clavícula","Codo / Brazo","Muñeca / Mano","Dedos","Columna","Cadera / Pelvis","Rodilla","Tobillo / Pie","Muscular","Pediatría especial","Procedimientos","Hospitalización","Kinesiología"],"protocolos":[{"id":"hombro_general","cat":"Hombro / Clavícula","label":"Hombro / Brazo - General","isFracture":false,"sinonimos":["clavicula","brazo","deltoides","manguito"],"text":"HOMBRO / BRAZO - GENERAL\n- Reposo relativo. Reposo deportivo por 2 semanas.\n- No levantar peso con extremidad lesionada.\n- Uso de cabestrillo / inmovilizador de hombro por 7 días.\n- Movilizar hombro y codo dentro del rango indoloro.\n- Frío local protegido, 10-15 min cada 4 horas por 2-3 días.\n- Priorizar dormir de espaldas.\n- Puede asistir a clases como oyente (sin escribir)."},{"id":"hombro_dolor","cat":"Hombro / Clavícula","label":"Dolor de hombro / Tendinopatía manguito","isFracture":false,"sinonimos":["manguito rotador","tendinopatia hombro","supraespinoso","bursitis"],"needsImaging":"ecografía","text":"DOLOR DE HOMBRO / TENDINOPATÍA MANGUITO ROTADOR\n- Reposo relativo. Reposo deportivo por 2 semanas.\n- No levantar peso con extremidad lesionada.\n- Uso de cabestrillo por 7 días.\n- Movilizar hombro y codo en rangos que no generen dolor.\n- Priorizar dormir de espaldas.\n- Frío local 10 min varias veces al día (no aplicar directamente sobre la piel).\n- Solicitar ecografía de hombro ambulatoria.\n- Control con TMT hombro con resultado de ecografía."},{"id":"humero_proximal_fx","cat":"Hombro / Clavícula","label":"Fractura húmero proximal","isFracture":true,"sinonimos":["humero","fractura humeral"],"needsImaging":"rx control","text":"FRACTURA HÚMERO PROXIMAL\n- Reposo relativo. Reposo deportivo por 2 semanas.\n- No levantar peso con extremidad lesionada.\n- Régimen habitual, hidratación abundante.\n- Uso de inmovilizador de hombro hasta control con traumatólogo.\n- Retirar 4 veces al día para realizar ejercicios de flexoextensión de codo, muñeca y dedos.\n- Frío local en hombro afectado, 30 min cada 4 horas (no en la noche), por 5 días.\n- Priorizar dormir de espaldas.\n- Control con TMT hombro en 2 semanas con radiografía de control (orden adjunta)."},{"id":"clavicula_fx","cat":"Hombro / Clavícula","label":"Fractura clavícula","isFracture":true,"sinonimos":["fractura clavicular"],"text":"FRACTURA CLAVÍCULA\n- Reposo en casa 7 días.\n- Reposo de extremidad afectada (no usar mano).\n- Reposo deportivo por 1 mes.\n- Inmovilizador de hombro hasta control: retirar para higiene y ejercicios de rango de movimiento codo, muñeca y dedos.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Puede ir a clases de oyente (sin escribir).\n- Control con TMT hombro en 1-2 semanas."},{"id":"dac","cat":"Hombro / Clavícula","label":"Disyunción acromio-clavicular (DAC)","isFracture":false,"sinonimos":["dac","acromioclavicular","luxacion clavicula"],"text":"DISYUNCIÓN ACROMIO-CLAVICULAR (DAC)\n- Reposo de extremidad afectada (no usar mano).\n- Cabestrillo / inmovilizador de hombro por 1-2 semanas.\n- Reposo deportivo por 1 semana / hasta nueva indicación médica.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Control con TMT hombro en caso de persistencia de síntomas por 1 semana."},{"id":"codo_traumatico","cat":"Codo / Brazo","label":"Codo traumático","isFracture":false,"sinonimos":["codo","epicondilo"],"text":"CODO TRAUMÁTICO\n- Reposo relativo, no levantar peso con mano lesionada.\n- Reposo deportivo por 4 semanas.\n- Uso de cabestrillo / inmovilizador de hombro por 14 días o hasta control.\n- Mantener rango de movilidad de codo: ejercicios de flexo-extensión a tolerancia, varias veces al día.\n- Frío local protegido, 10-15 min varias veces al día.\n- Control con TMT en 1-2 semanas."},{"id":"antebrazo_fx","cat":"Codo / Brazo","label":"Fractura antebrazo","isFracture":true,"sinonimos":["radio","cubito","ulna","yeso bp"],"text":"FRACTURA ANTEBRAZO\n- Reposo de extremidad afectada (no usar mano).\n- Mano en alto en cabestrillo.\n- Reposo deportivo hasta nueva indicación médica.\n- Yeso BP: no mojar ni manipular.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Puede ir a clases de oyente (sin escribir).\n- Control con TMT mano en 1-2 semanas."},{"id":"muneca_esguince","cat":"Muñeca / Mano","label":"Muñeca - Esguince","isFracture":false,"inlineControls":true,"sinonimos":["torcedura muñeca","wrist"],"text":"MUÑECA ESGUINCE\n- Reposo de extremidad afectada (no usar mano).\n- Mano en alto en cabestrillo.\n- Reposo deportivo por 10 días.\n- Inmovilizador de muñeca / Tubigrip por 7 días (retirar en casa).\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Puede ir a clases de oyente (sin escribir).\n\n--- CONTROLES ---\n- Control con TMT mano en caso de persistencia de síntomas en 2 semanas.\n- Control en Servicio de Urgencia en caso de necesidad."},{"id":"muneca_fx","cat":"Muñeca / Mano","label":"Muñeca - Fractura","isFracture":true,"sinonimos":["fractura muñeca","colles","yeso muñeca"],"text":"FRACTURA MUÑECA\n- Reposo de extremidad afectada (no usar mano).\n- Mano en alto en cabestrillo.\n- Reposo deportivo hasta nueva indicación médica.\n- Yeso: no mojar ni manipular.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Ejercicios de flexo-extensión de dedos, 20 veces cada hora.\n- Puede ir a clases de oyente (sin escribir).\n- Control con TMT mano en 1-2 semanas con radiografía."},{"id":"muneca_torus","cat":"Muñeca / Mano","label":"Fractura Torus muñeca (pediátrico)","isFracture":true,"sinonimos":["torus","fractura tallo verde","buckle"],"text":"FRACTURA TORUS MUÑECA (PEDIÁTRICO)\n- Reposo relativo, reposo escolar por 3 días.\n- Luego puede acudir al colegio de oyente.\n- No mojar ni retirar yeso (AVP con pulgar), no introducir objetos entre piel y yeso.\n- Reposo deportivo al menos 2 semanas según control en TMT infantil.\n- Reposo de extremidad lesionada, uso de cabestrillo para caminar.\n- Frío local protegido, 10 min varias veces al día.\n- Ejercicios de flexo-extensión de dedos cada hora, 20 repeticiones.\n- Control con TMT infantil ambulatorio con radiografía de control."},{"id":"escafoides_sospecha","cat":"Muñeca / Mano","label":"Sospecha fractura escafoides","isFracture":false,"sinonimos":["escafoides","tabaquera anatomica"],"text":"SOSPECHA FRACTURA ESCAFOIDES (no confirmada)\n- Reposo relativo, no levantar peso con mano lesionada.\n- Reposo deportivo por 2 semanas.\n- Uso de muñequera (preferir inmovilizador de pulgar) a permanencia.\n- Frío local protegido, 10 min varias veces al día.\n- Control con TMT mano en 2 semanas con radiografía de control.\n- Consultar a urgencia en caso de dolor intenso, adormecimiento de dedos o necesidad."},{"id":"metacarpianos","cat":"Muñeca / Mano","label":"Metacarpianos / Mano (contusión/esguince)","isFracture":false,"sinonimos":["mano contusion","palma"],"text":"MANO / METACARPIANOS (Contusión / Esguince)\n- Reposo de extremidad afectada (no usar mano).\n- Mano en alto.\n- Uso de muñequera por 7-10 días (retirar en casa).\n- Realizar ejercicios de flexo-extensión de dedos 20 veces cada hora mientras esté despierto.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Reposo deportivo por 2 semanas.\n- Puede ir a clases de oyente (sin escribir)."},{"id":"mano_yeso","cat":"Muñeca / Mano","label":"Mano con valva / yeso","isFracture":true,"sinonimos":["valva yeso mano","yeso mano"],"text":"MANO CON VALVA / YESO\n- Valva de yeso por 7 días (retirar en casa según indicación).\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (sin escribir).\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Reposo deportivo por 14 días.\n- Control con TMT mano según indicación."},{"id":"pulgar_esguince","cat":"Dedos","label":"Esguince de pulgar (Stener-like)","isFracture":false,"sinonimos":["pulgar","stener","ligamento colateral"],"text":"ESGUINCE DE PULGAR\n- Reposo relativo, reposo deportivo por 2 semanas.\n- Reposo de mano lesionada, mano en alto en lo posible las primeras 48 horas.\n- Uso de inmovilizador de pulgar por 7-10 días.\n- Frío local protegido, 10 min varias veces al día.\n- Control con TMT mano en caso de persistencia de molestias tras 2-3 semanas.\n- Consultar a urgencia en caso de necesidad."},{"id":"dedo_esguince","cat":"Dedos","label":"Dedo - Esguince / Contusión","isFracture":false,"inlineControls":true,"sinonimos":["falange","torcedura dedo","vendaje solidario"],"text":"DEDO - ESGUINCE / CONTUSIÓN\n- Reposo relativo, reposo deportivo por 10-14 días.\n- Mano en alto, no usar mano.\n- Uso de vendaje solidario / férula digital / embarrilado por 7-14 días (cambio diario, retirar en casa).\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Puede ir a clases de oyente (sin escribir).\n\n--- CONTROLES ---\n- Control con TMT mano en caso de persistencia de dolor en 2 semanas.\n- Control en Servicio de Urgencia en caso de necesidad."},{"id":"dedo_fx","cat":"Dedos","label":"Dedo - Fractura","isFracture":true,"sinonimos":["falange fractura"],"text":"DEDO - FRACTURA\n- Reposo de extremidad afectada (no usar mano).\n- Mano en alto en cabestrillo.\n- Reposo deportivo por 1 mes (sin educación física ni actividades que involucren mano).\n- Inmovilizador pulgar / férula digital / embarrilado / valva: no mojar ni manipular.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Puede ir a clases de oyente (sin escribir).\n- Control con TMT mano en 1-2 semanas."},{"id":"dedo_pie","cat":"Dedos","label":"Dedo del pie","isFracture":false,"sinonimos":["ortejo","hallux"],"text":"DEDO DEL PIE\n- Reposo con pie en alto.\n- Uso de vendaje solidario, cambio diario por 1 semana.\n- Uso de bota por 1 semana para caminar (puede retirar en reposo).\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Reposo deportivo por 2 semanas."},{"id":"lumbago_mecanico","cat":"Columna","label":"Lumbago mecánico","isFracture":false,"sinonimos":["dolor lumbar","espalda baja"],"text":"LUMBAGO MECÁNICO\n- Reposo relativo, no levantar peso.\n- Mantener actividades de la vida diaria, evitar reposo en cama durante el día.\n- Reposo deportivo por 2 semanas.\n- Calor local intermitente 10-15 min varias veces al día en zona de mayor dolor (no aplicar directo sobre la piel).\n- Control con TMT columna si las molestias no disminuyen en 4 semanas.\n- Consultar a urgencia en caso de fiebre, dolor que no cede, dificultad para mover piernas, pérdida de sensibilidad, incontinencia urinaria/fecal o dificultad para orinar."},{"id":"lumbociatica","cat":"Columna","label":"Lumbociática","isFracture":false,"sinonimos":["ciatica","ciatalgia","radicular"],"needsImaging":"RM columna lumbar","text":"LUMBOCIÁTICA\n- Reposo relativo: evitar gatillantes dolorosos.\n- Reposo deportivo por 15 días.\n- Frío local protegido 10 min cada 4 hrs por 5 días, luego calor local intermitente 10-15 min varias veces al día por 10 días.\n- Solicitar resonancia magnética de columna lumbar.\n- Control con TMT columna con resultado de RM.\n- Consultar a urgencia en caso de fiebre, dolor que no cede, déficit motor, pérdida de sensibilidad, incontinencia o dificultad para orinar."},{"id":"cervicobraquialgia","cat":"Columna","label":"Cervicobraquialgia","isFracture":false,"sinonimos":["cervical","cuello","braquialgia"],"text":"CERVICOBRAQUIALGIA\n- Reposo relativo.\n- Calor local 10-15 min cada 3-4 horas por 4 días.\n- Control con TMT ambulatorio si las molestias no disminuyen en 3 semanas.\n- Consultar a urgencia en caso de fiebre, dolor intenso a pesar de analgesia, dolor que se irradia a uno o ambos brazos, incontinencia urinaria/fecal, dificultad para orinar o déficit neurológico."},{"id":"cadera_dolor","cat":"Cadera / Pelvis","label":"Dolor de cadera / Coxalgia","isFracture":false,"sinonimos":["coxalgia","cadera"],"text":"DOLOR DE CADERA\n- Reposo relativo, marcha con bastones con carga a tolerancia.\n- Frío local protegido, 10 min varias veces al día.\n- Control con TMT cadera ambulatorio en 2 semanas.\n- Consultar a urgencia en caso de fiebre, dolor que no cede, incontinencia o dificultad para defecar/orinar, déficit neurológico."},{"id":"pelvis_fx_orto","cat":"Cadera / Pelvis","label":"Fractura pelvis/acetábulo ortopédica","isFracture":true,"sinonimos":["pelvis","acetabulo"],"text":"FRACTURA PELVIS / ACETÁBULO (manejo ortopédico)\n- Reposo relativo, marcha con burrito o andador con carga a tolerancia.\n- No guardar reposo acostado durante el día. Levantarse o sentarse en lo posible.\n- Frío local protegido cada 3 hrs por 4 días.\n- Control con TMT cadera ambulatorio en 2 semanas con radiografía.\n- Consultar a urgencia en caso de fiebre, dolor que no cede, incontinencia, dificultad para orinar/defecar o déficit neurológico."},{"id":"claudicacion_nino","cat":"Pediatría especial","label":"Claudicación en niño","isFracture":false,"sinonimos":["sinovitis transitoria","cojera","claudicacion"],"text":"CLAUDICACIÓN EN NIÑO\n- Reposo relativo.\n- Régimen habitual, hidratación abundante.\n- Frío local protegido, 10 min varias veces al día.\n- Control de temperatura cada 8 horas (antes de dar medicamentos).\n- Control médico ambulatorio si las molestias no ceden en 10-14 días.\n- Urgencia SOS en caso de fiebre, dolor que no cede, aumento de volumen, signos inflamatorios articulares o dificultad respiratoria."},{"id":"sinovitis","cat":"Pediatría especial","label":"Sinovitis transitoria","isFracture":false,"sinonimos":["sinovitis","sinovitis cadera"],"text":"SINOVITIS TRANSITORIA\n- Reposo absoluto en casa.\n- Control de temperatura cada 8 horas (antes de dar medicamentos).\n- Frío local protegido, 10 min varias veces al día.\n- Control en convenio escolar SOS o urgencia en 48 horas, o antes en caso de fiebre, empeoramiento clínico o según necesidad."},{"id":"pronacion_dolorosa","cat":"Pediatría especial","label":"Pronación dolorosa (codo de niñera)","isFracture":false,"noMeds":true,"sinonimos":["pronacion","codo niñera","subluxacion radio"],"text":"PRONACIÓN DOLOROSA (resuelta tras maniobra de reducción)\n- Movilidad recuperada del codo afectado.\n- Reposo relativo del brazo el resto del día.\n- Educar a los padres sobre evitar tracción brusca del antebrazo.\n- En caso de recurrencia (frecuente en menores de 5 años), consultar nuevamente.\n- Control en convenio escolar SOS si persiste rechazo a movilizar el brazo."},{"id":"osteocondrosis","cat":"Pediatría especial","label":"Osteocondrosis","isFracture":false,"sinonimos":["osgood schlatter","sever","perthes"],"text":"OSTEOCONDROSIS\n- Reposo absoluto en casa sin apoyar por 7 días.\n- Reposo deportivo por 3 semanas.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Control en convenio escolar 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."},{"id":"rodilla_esguince","cat":"Rodilla","label":"Esguince rodilla","isFracture":false,"sinonimos":["torcedura rodilla","lcm","lcl"],"text":"ESGUINCE RODILLA\n- Reposo en casa 2 días con pierna en alto.\n- Reposo deportivo por 10 días.\n- Tubigrip / Inmovilizador de rodilla por 7 días (retirar en domicilio).\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Control con TMT rodilla en caso de persistencia de síntomas por 2 semanas."},{"id":"rodilla_trauma","cat":"Rodilla","label":"Rodilla traumática aguda","isFracture":false,"sinonimos":["rodilla aguda","trauma rodilla","hemartrosis"],"text":"RODILLA TRAUMÁTICA AGUDA\n- Reposo en casa 7 días con pierna en alto.\n- Reposo deportivo hasta control.\n- Inmovilizador de rodilla: retirar para higiene.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Control con TMT rodilla en 1 semana."},{"id":"rodilla_lesion","cat":"Rodilla","label":"Lesión rodilla con sospecha ligamentosa","isFracture":false,"needsImaging":"RM rodilla","sinonimos":["lca","menisco","ligamento cruzado"],"text":"LESIÓN RODILLA - SOSPECHA LIGAMENTOSA\n- Reposo deportivo hasta resultado de exámenes.\n- Reposo con pierna en alto.\n- Uso de inmovilizador de rodilla hasta control con exámenes (articulado en 20° de flexión).\n- Frío local protegido, 20 min cada 2 horas por 7 días.\n- Solicitar resonancia magnética de rodilla.\n- Control con TMT rodilla con resultado de RM."},{"id":"rodilla_yeso","cat":"Rodilla","label":"Rodilla con valva / yeso","isFracture":true,"sinonimos":["valva rodillera","yeso rodilla"],"text":"RODILLA CON VALVA / YESO\n- Valva de yeso rodillera (no retirar) o inmovilizador de rodilla.\n- Reposo absoluto en casa con pierna en alto hasta control.\n- No mojar yeso.\n- Frío local protegido, 10 min cada 4 hrs por 2 días.\n- Control en convenio escolar / TMT rodilla en 1 semana."},{"id":"tobillo_esguince_1","cat":"Tobillo / Pie","label":"Esguince tobillo G1 (leve)","isFracture":false,"kinesio":true,"sinonimos":["torcedura tobillo","ankle","esguince leve"],"text":"ESGUINCE TOBILLO LEVE (GRADO 1)\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo por 10-14 días.\n- Tubigrip / Tobillera con barras laterales (tipo ASO) por 7-10 días (retirar en domicilio).\n- Retirar la tobillera durante el día para realizar ejercicios de flexo-extensión.\n- Frío local protegido, 10 min cada 4-6 hrs por 2 días.\n- Control con TMT tobillo y pie en caso de persistencia de síntomas en 2 semanas."},{"id":"tobillo_esguince_2","cat":"Tobillo / Pie","label":"Esguince tobillo G2 (moderado)","isFracture":false,"kinesio":true,"sinonimos":["torcedura tobillo grado 2","esguince moderado"],"text":"ESGUINCE TOBILLO MODERADO (GRADO 2)\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo por 14 días.\n- Bota inmovilizadora / Bota CAM por 7-14 días (retirar en domicilio).\n- Frío local protegido, 10 min cada 4-6 hrs por 7 días.\n- Control con TMT tobillo y pie en 2 semanas."},{"id":"tobillo_fx","cat":"Tobillo / Pie","label":"Fractura tobillo (ortopédica)","isFracture":true,"sinonimos":["fractura maleolar","tobillo fx"],"text":"FRACTURA TOBILLO (manejo ortopédico)\n- Reposo relativo con pierna en alto.\n- No cargar / no pisar / no apoyar con pie afectado (o cargar según tolerancia a dolor según indicación).\n- Reposo deportivo hasta nueva indicación médica.\n- Yeso bota corta: no mojar ni manipular / Bota inmovilizadora: retirar para higiene y al dormir.\n- Frío local protegido, 10 min cada 4-6 hrs por 2 días.\n- Control con TMT tobillo y pie en 1-2 semanas con radiografía de control."},{"id":"metatarso_fx","cat":"Tobillo / Pie","label":"Fractura metatarso ortopédica","isFracture":true,"sinonimos":["metatarso","5to metatarsiano"],"text":"FRACTURA METATARSO (manejo ortopédico)\n- Reposo relativo. Marcha con bastones, extremidad afectada en descarga.\n- Reposo deportivo por 2 semanas.\n- Pie en alto en lo posible las primeras 48 horas.\n- Uso de bota ortopédica día y noche por 4 semanas. Retirar durante el día para realizar ejercicios de flexo-extensión de tobillo.\n- Frío local protegido, 10 min varias veces al día.\n- Control con TMT en 1 semana con radiografía de control."},{"id":"desgarro_muscular","cat":"Muscular","label":"Desgarro muscular (genérico)","isFracture":false,"needsImaging":"ecotomografía","sinonimos":["desgarro","ruptura fibrilar","elongacion"],"text":"DESGARRO MUSCULAR\n- Reposo deportivo por 30 días (hasta resultado de exámenes).\n- Reposo en domicilio por 7 días.\n- Frío local intermitente 20 min cada 2 horas por 5 días, luego calor local intermitente por 2 semanas.\n- Solicitar ecotomografía de partes blandas ambulatoria.\n- Control con TMT con resultado de ecotomografía."},{"id":"contusion","cat":"Muscular","label":"Contusión / Golpe leve","isFracture":false,"sinonimos":["golpe","moreton","hematoma"],"text":"CONTUSIÓN / GOLPE LEVE\n- Reposo deportivo por 1 semana.\n- Frío local protegido, 10 min cada 4 hrs por 2 días."},{"id":"suturas","cat":"Procedimientos","label":"Indicaciones post-sutura","isFracture":false,"noMeds":true,"inlineControls":true,"sinonimos":["corte","puntos","herida"],"text":"INDICACIONES POST-SUTURA\n- Reposo relativo, evitar esfuerzo físico por 7 días.\n- No mojar ni retirar apósitos / vendaje.\n- Brazo o pierna en alto según corresponda.\n- Sin deporte por 2 semanas.\n- Curación por enfermería en convenio en 48 horas (control por enfermería).\n- Control médico en 7-14 días para retiro de puntos.\n- Revisar vacuna antitetánica (especialmente si es herida con fierro o profunda).\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."},{"id":"mordedura","cat":"Procedimientos","label":"Mordedura / Infección","isFracture":false,"needsAntibiotic":true,"inlineControls":true,"sinonimos":["mordida","perro","gato","infeccion herida"],"text":"MORDEDURA / INFECCIÓN\n- Reposo relativo, evitar esfuerzo físico por 7 días.\n- No mojar ni manipular vendaje.\n- Curación por enfermería en convenio en 48 horas.\n- Control médico en 7 días / retiro de puntos según evolución.\n- Revisar vacuna antitetánica y antirrábica según protocolo local.\n- En caso de mordedura por perro: observar al animal por 10 días, completar esquema de vacuna antirrábica.\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."},{"id":"rx_normal","cat":"Procedimientos","label":"RX Normal (no trauma)","isFracture":false,"noMeds":true,"sinonimos":["radiografia normal","lipotimia"],"text":"RX NORMAL\n- Rx: no se aprecian signos sugerentes de lesión ósea aguda traumática.\n- Se sugiere consultar bajo su previsión por su cuadro médico que no corresponde a trauma."},{"id":"kinesio_tobillo","cat":"Kinesiología","label":"Kinesio - Tobillo (esguince/tendinopatía)","isFracture":false,"noMeds":true,"sinonimos":["fisioterapia tobillo"],"text":"KINESIOTERAPIA MOTORA - TOBILLO\nDG: Esguince de tobillo / Tendinopatía tendones peroneos\n\n- Evaluación kinésica.\n- Fisioterapia (US / UT / TENS).\n- ROM tobillo.\n- Ejercicios terapéuticos.\n- Ejercicios de propiocepción tobillo (LPAA).\n- Fortalecimiento TP / TTP.\n- Elongación tríceps sural.\n- Masoterapia.\n- Pauta domiciliaria.\n\nx 10 sesiones (día por medio)."},{"id":"kinesio_hombro","cat":"Kinesiología","label":"Kinesio - Hombro (manguito rotador)","isFracture":false,"noMeds":true,"sinonimos":["fisioterapia hombro"],"text":"KINESIOTERAPIA MOTORA - HOMBRO\nDG: Síndrome de manguito rotador\n\n- Evaluación kinésica.\n- CHC.\n- Ejercicios terapéuticos de cintura escapular.\n- Estabilización escapulohumeral.\n- Fortalecimiento muscular de manguito rotador y periescapular.\n- Masoterapia.\n- Pauta domiciliaria.\n\nx 10 sesiones (día por medio)."},{"id":"kinesio_recto_femoral","cat":"Kinesiología","label":"Kinesio - Desgarro recto femoral","isFracture":false,"noMeds":true,"sinonimos":["fisioterapia muslo","recto femoral"],"text":"KINESIOTERAPIA MOTORA - DESGARRO RECTO FEMORAL\nDG: Desgarro muscular recto femoral\n\n- Evaluación kinésica.\n- Fisioterapia (US / UT / TENS).\n- Isométricos de cuádriceps.\n- Elongación de cuádriceps.\n- Masoterapia.\n- Pauta domiciliaria.\n\nx 10 sesiones."},{"id":"kinesio_isquiotibiales","cat":"Kinesiología","label":"Kinesio - Desgarro isquiotibiales","isFracture":false,"noMeds":true,"sinonimos":["fisioterapia isquiotibiales","hamstring"],"text":"KINESIOTERAPIA MOTORA - DESGARRO ISQUIOTIBIALES\nDG: Desgarro muscular de isquiotibiales\n\n- Evaluación kinésica.\n- Fisioterapia (US / TENS / UT).\n- Elongación.\n- Masoterapia.\n- Pauta domiciliaria.\n\nx 10 sesiones."},{"id":"kinesio_generica","cat":"Kinesiología","label":"Kinesio - Genérica (editar diagnóstico)","isFracture":false,"noMeds":true,"sinonimos":["fisioterapia","knt"],"text":"KINESIOTERAPIA\n\nDG: [completar diagnóstico]\n\n- Se solicita KNT x 10 sesiones.\n- Evaluación kinésica.\n- Tratamiento KNT integral.\n- Fisioterapia según necesidad.\n- Ejercicios terapéuticos específicos.\n- Pauta domiciliaria.\n\nx 10 sesiones."}],"combosFarmacologicos":{"adulto":[{"id":"basico","label":"Básico (dolor leve)","descripcion":"Paracetamol + AINE","items":["- Paracetamol 1 g: 1 comprimido cada 8 horas VO por 7 días.","- Celecoxib 200 mg: 1 comprimido cada 12 horas VO por 5-7 días."]},{"id":"basico_ibu","label":"Básico con Ibuprofeno","descripcion":"Paracetamol + Ibuprofeno (más económico)","items":["- Paracetamol 1 g: 1 comprimido cada 8 horas VO por 7 días.","- Ibuprofeno 400 mg: 1 comprimido cada 8 horas VO por 5 días."]},{"id":"moderado","label":"Moderado (dolor agudo)","descripcion":"Paracetamol + AINE + Ketorolaco SOS","items":["- Paracetamol 1 g: 1 comprimido cada 8 horas VO por 7 días.","- Celecoxib 200 mg: 1 comprimido cada 12 horas VO por 7 días.","- Ketorolaco sublingual 30 mg: 1 comprimido SOS si dolor intenso (con comidas)."]},{"id":"severo","label":"Severo (con opioide débil)","descripcion":"Tramadol/Paracetamol + AINE + Ketorolaco SOS","items":["- Tramadol 37.5 mg / Paracetamol 325 mg: 1 comprimido cada 8 horas VO por 7-10 días.","- Celecoxib 200 mg: 1 comprimido cada 12 horas VO por 7 días.","- Ketorolaco sublingual 30 mg: 1 comprimido SOS si dolor intenso."]},{"id":"neuropatico","label":"Neuropático","descripcion":"AINE + Tramadol + Pregabalina","items":["- Tramadol 37.5 mg / Paracetamol 325 mg: 1 comprimido cada 8 horas VO por 10 días.","- Celecoxib 200 mg: 1 comprimido cada 12 horas VO por 7 días.","- Pregabalina 75 mg: 1 comprimido nocturno VO por 30 días (titular: iniciar con 1/2 comp x 7 días)."]},{"id":"muscular","label":"Muscular (con relajante)","descripcion":"AINE + Paracetamol + Ciclobenzaprina","items":["- Paracetamol 1 g: 1 comprimido cada 8 horas VO por 7-10 días.","- Celecoxib 200 mg: 1 comprimido cada 12 horas VO por 7 días.","- Ciclobenzaprina 5-10 mg: 1 comprimido nocturno VO por 7-10 noches."]},{"id":"radicular","label":"Radicular (lumbociática)","descripcion":"AINE + Tramadol + Pregabalina + Corticoides","items":["- Celecoxib 200 mg: 1 comprimido cada 12 horas VO por 7 días.","- Tramadol 37.5 mg / Paracetamol 325 mg: 1 comprimido cada 8 horas VO por 10 días.","- Prednisona 20 mg: 1 comp cada 12 horas VO por 3 días, luego 1/2 comp cada 12 horas VO por 2 días (total 5 días).","- Pregabalina 75 mg: 1 comprimido nocturno VO por 30 días.","- Omeprazol 20 mg: 1 comprimido cada 24 horas VO por 30 días (protector gástrico)."]},{"id":"antibiotico","label":"Antibiótico (mordedura/infección)","descripcion":"Amoxi/Clav o Cefadroxilo","items":["- Amoxicilina / Ácido clavulánico 875/125 mg: 1 comprimido cada 12 horas VO por 7 días.","- Cefadroxilo 500 mg: 1 comprimido cada 12 horas VO por 7 días (alternativa si alergia a penicilina).","- Omeprazol 20 mg: 1 comprimido al día por 7 días (protector gástrico)."]}]},"formularioAdulto":{"ANALGESICOS_AINES":["- Paracetamol 1 g: 1 comprimido cada 8 horas por 7 días.","- Ibuprofeno 400 mg: 1 comprimido cada 8 horas por 5 días.","- Celecoxib 200 mg: 1 comprimido cada 12 horas por 5-7 días.","- Etoricoxib 120 mg: 1 comprimido al día por 5 días.","- Diclofenaco 50 mg: 1 comprimido cada 8 horas por 3 días.","- Ketoprofeno 50 mg: 1 comprimido cada 8 horas por 5 días.","- Talflex 100 mg: 1 comprimido cada 12 horas por 5 días.","- Talflex BI 150 mg: 1 comprimido cada 24 horas por 5 días.","- Tramadol 37.5 mg / Paracetamol 325 mg: 1 comprimido cada 8 horas por 7-10 días.","- Ketorolaco sublingual 30 mg: 1 comprimido SOS si dolor agudo (con comidas)."],"ANTIBIOTICOS":["- Amoxicilina / Ácido clavulánico 875/125 mg: 1 comp cada 12 horas por 7 días.","- Cefadroxilo 500 mg: 1 comp cada 12 horas por 7 días (alternativa).","- Ciprofloxacino 500 mg: 1 comp cada 12 horas por 5-7 días (alternativa)."],"OTROS":["- Omeprazol 20 mg: 1 comp al día por 7-30 días (protector gástrico).","- Pregabalina 75 mg: 1 comp nocturno por 30 días (dolor neuropático).","- Ciclobenzaprina 5-10 mg: 1 comp nocturno por 7-10 noches (relajante muscular).","- Prednisona 20 mg: pauta descendente (1 c/12h x 3 días, luego 1/2 c/12h x 2 días).","- Cortiprex 20 mg: 1 comp cada 12 horas por 5 días (luego suspender)."]},"medicamentosPediatricos":{"PARACETAMOL":{"dosis_calculo":15,"rango_texto":"10-15","frecuencia_dosis":8,"susp_120_5ml":120,"susp_160_5ml":160,"gotas_100_ml":100},"IBUPROFENO":{"dosis_calculo":10,"rango_texto":"5-10","frecuencia_dosis":8,"susp_200_5ml":200,"susp_100_5ml":100},"AMOXICLAV":{"dosis_dia":80,"frecuencia_dia":3,"presentaciones_susp":[{"amoxi_mg":250,"volumen":5,"nombre":"62,5/250 por 5ml"},{"amoxi_mg":500,"volumen":5,"nombre":"125/500 por 5ml"},{"amoxi_mg":600,"volumen":5,"nombre":"42,9/600 por 5ml (alto ratio)"}]},"CEFADROXILO":{"dosis_dia":50,"frecuencia_dia":2,"presentacion_susp":{"mg":250,"volumen":5,"nombre":"250mg/5ml"}}},"hospitalizacion":{"adulto_general":{"label":"Adulto - Sala básica (general)","text":"INDICACIONES DE HOSPITALIZACIÓN - ADULTO\n- Hospitalizar en sala básica.\n- Régimen cero (NPO).\n- Reposo absoluto en cama.\n- Medias antiembólicas.\n- Suero fisiológico 500 ml + Ketoprofeno 300 mg + Metamizol 3 g, a 20 ml/hora.\n- Paracetamol 1 g cada 8 horas EV.\n- Omeprazol 40 mg cada 24 horas EV.\n- Parecoxib 1 ampolla EV SOS si dolor.\n- Exámenes preoperatorios (orden adjunta).\n- Preparar para pabellón. Eventual cirugía hoy / mañana AM/PM.\n- Vigilar neurovascular distal de extremidad afectada.\n- Control de signos vitales según protocolo."},"adulto_cadera":{"label":"Adulto - Cirugía cadera","text":"INDICACIONES DE HOSPITALIZACIÓN - CIRUGÍA CADERA\n- Reposo absoluto en cama.\n- Régimen diabético (o según patología de base).\n- Suero fisiológico 250 cc + Ketoprofeno 200 mg + Metamizol 2 g EV a 10 cc/hora.\n- Paracetamol 1 g cada 8 horas EV.\n- Pro-Bextra (Parecoxib) 40 mg EV SOS.\n- Omeprazol 40 mg cada 24 horas EV.\n- Medias antiembólicas (MAE).\n- Exámenes preoperatorios.\n- Ecocardiograma.\n- Evaluación por medicina interna y preanestésica.\n- Vigilar neurovascular distal."},"pediatrico":{"label":"Pediátrico","text":"INDICACIONES DE HOSPITALIZACIÓN - PEDIÁTRICO\n- Régimen cero.\n- Reposo relativo.\n- Premix EV (suero glucosalino).\n- Paracetamol EV: 15 mg/kg/dosis cada 6-8 horas.\n- Ketorolaco EV: 0.5 mg/kg/dosis cada 8 horas (máximo 30 mg).\n- Exámenes preoperatorios.\n- Preparar para resolución quirúrgica.\n- Valva inmovilizadora según extremidad afectada.\n- Vigilar neurovascular distal.\n- Control de signos vitales."}},"sutura":{"protocolo":{"label":"Protocolo de procedimiento","text":"PROTOCOLO DE SUTURA\n- Se identifica paciente correcto y sitio a intervenir: [SITIO ANATÓMICO].\n- Paciente en decúbito supino con mesa de mano (o posición según sitio).\n- Asepsia con clorhexidina, campo estéril.\n- Anestesia troncular / local con lidocaína 2%.\n- Aseo profuso con suero fisiológico.\n- Sutura por planos: Vicryl 3.0 a planos profundos, Nylon 3.0 / Monosof 4.0 a piel.\n- Curación estéril con gasa y Fixomull.\n- Procedimiento sin incidentes."},"indicaciones":{"label":"Indicaciones post-sutura","text":"INDICACIONES POST-SUTURA\n- Reposo relativo, sin deporte por 2 semanas.\n- No mojar ni retirar apósitos.\n- Brazo / pierna en alto según sitio.\n- Curación en 48-72 horas en policlínico de curaciones o convenio escolar.\n- Control médico en 7-14 días para retiro de puntos.\n- Revisar vacuna antitetánica.\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."}},"analgesiaEV":{"basica":{"label":"Básica (dolor moderado)","text":"ANALGESIA ENDOVENOSA - BÁSICA\n- Suero fisiológico 250 ml + Ketoprofeno 200 mg + Metamizol 2 g, EV a 20 ml/hora.\n- Paracetamol 1 g cada 8 horas EV.\n- Omeprazol 40 mg cada 24 horas EV (protector gástrico)."},"moderada":{"label":"Moderada (con Parecoxib SOS)","text":"ANALGESIA ENDOVENOSA - MODERADA\n- Suero fisiológico 500 ml + Ketoprofeno 300 mg + Metamizol 3 g, EV a 20 ml/hora.\n- Paracetamol 1 g cada 8 horas EV.\n- Parecoxib 40 mg EV SOS si dolor.\n- Omeprazol 40 mg cada 24 horas EV."},"severa":{"label":"Severa (con opioide)","text":"ANALGESIA ENDOVENOSA - SEVERA\n- Suero fisiológico 500 ml + Ketoprofeno 300 mg + Metamizol 3 g, EV a 20 ml/hora.\n- Paracetamol 1 g cada 8 horas EV.\n- Tramadol 100 mg EV en 100 ml SF, pasar en 20 minutos cada 8 horas SOS.\n- Parecoxib 40 mg EV SOS si dolor intenso.\n- Omeprazol 40 mg cada 24 horas EV.\n- Vigilar somnolencia y depresión respiratoria con uso de opioides."},"pediatrica":{"label":"Pediátrica","text":"ANALGESIA ENDOVENOSA - PEDIÁTRICA\n- Paracetamol EV: 15 mg/kg/dosis cada 6-8 horas (máximo 60 mg/kg/día).\n- Ketorolaco EV: 0.5 mg/kg/dosis cada 8 horas (máximo 30 mg por dosis, máximo 5 días).\n- Metamizol EV: 20-40 mg/kg/dosis cada 6-8 horas.\n- Considerar Fentanyl 1-2 mcg/kg/dosis EV en bolo SOS si dolor severo (vigilar depresión respiratoria).\n- Premix (suero glucosalino) según necesidad de hidratación."}}};
+
 /* =========================================================
-   Generador de Indicaciones Traumatología v3.1
+   Generador de Indicaciones Traumatología v3.2
    Lógica principal - JavaScript modular
    ========================================================= */
 
 // ======================== ESTADO GLOBAL ========================
 const STATE = {
-  data: null,            // Datos cargados del JSON
-  protocolos: [],        // Lista de protocolos
-  selectedId: null,      // ID seleccionado actualmente
-  filteredList: [],      // Lista filtrada actual
-  selectedIndex: -1,     // Índice seleccionado en navegación con teclado
-  favorites: [],         // IDs favoritos (persistidos)
-  usageCount: {},        // Conteo de uso por ID (persistido)
-  history: [],           // Historial de últimas indicaciones (persistido)
-  theme: 'light',        // 'light' o 'dark'
+  data: null,
+  protocolos: [],
+  selectedId: null,
+  filteredList: [],
+  selectedIndex: -1,
+  favorites: [],
+  usageCount: {},
+  history: [],
+  theme: 'light',
+  activeTab: 'patologia',
+  selectedCombo: null,         // ID del combo farmacológico activo
+  selectedHospi: null,         // ID de hospitalización activa
+  selectedSutura: [],          // IDs de bloques de sutura activos (multi-select)
+  selectedEV: null,            // ID de analgesia EV activa
 };
 
 const STORAGE_KEYS = {
@@ -435,8 +568,8 @@ const STORAGE_KEYS = {
 const PROTOCOLS_WITH_INLINE_CONTROLS = ['suturas', 'mordedura', 'dedo_esguince', 'muneca_esguince'];
 
 const FOOTER_NO_FRACTURE = `\n--- CONTROLES ESTÁNDAR ---\n
-- Control en convenio escolar en caso de persistir con síntomas por 2 semanas (solicitar hora antes). 
-- Control en servicio de urgencia en caso de necesidad o signos de alarma (fiebre, aumento de eritema, calor local, dolor o secreción).
+- Control en convenio escolar / centro médico en caso de persistir con síntomas en 2 semanas (solicitar hora antes).
+- Control en servicio de urgencia en caso de necesidad o signos de alarma (fiebre, aumento de eritema, calor local, dolor en aumento o secreción).
 - Control con Dr. [Nombre del Médico] en [X] días (solo si el médico lo cree necesario).
 ---------------------------------------------------\n`;
 
@@ -451,7 +584,6 @@ function loadFromStorage() {
     console.warn('Error cargando datos persistidos:', e);
   }
 }
-
 function saveFavorites() { localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(STATE.favorites)); }
 function saveUsage() { localStorage.setItem(STORAGE_KEYS.usage, JSON.stringify(STATE.usageCount)); }
 function saveHistory() { localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(STATE.history)); }
@@ -459,245 +591,17 @@ function saveTheme() { localStorage.setItem(STORAGE_KEYS.theme, STATE.theme); }
 
 // ======================== CARGA DE DATOS ========================
 async function loadData() {
-  // Datos embebidos directamente (sin fetch externo)
-  STATE.data = EMBEDDED_DATA;
-  STATE.protocolos = STATE.data.protocolos;
-}
-
-// Datos de protocolos embebidos
-const EMBEDDED_DATA = {
-  "version": "3.1.0",
-  "protocolos": [
-    {
-      "id": "hombro_general",
-      "cat": "Ext. Superior",
-      "label": "Hombro / Brazo General",
-      "isFracture": false,
-      "sinonimos": ["clavicula", "brazo", "deltoides"],
-      "text": "HOMBRO / CLAVICULA / BRAZO - GENERAL\n- Reposo relativo.\n- Uso de cabestrillo o inmovilizador de hombro por 7 días.\n- Movilizar hombro y codo dentro del rango indoloro.\n- Frío local 10–15 min cada 4 horas por 2–3 días.\n- Puede asistir a clases como oyente (sin escribir).\n- Reposo deportivo por 2–4 semanas según evolución.\n- Control en convenio o centro médico.\n- Consulta SOS en Urgencias si hay aumento del dolor o edema."
-    },
-    {
-      "id": "clavicula_fx",
-      "cat": "Ext. Superior",
-      "label": "Fractura Clavícula",
-      "isFracture": true,
-      "sinonimos": ["clavicula", "fractura clavicular"],
-      "text": "CLAVICULA FRACTURA\n- Reposo en casa 7 días.\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes.\n- Inmovilizador de hombro hasta control: Retirar para higiene y ejercicios de rango de movimiento codo, muñeca y dedos.\n- Control en convenio escolar 2 / 3 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "dedo_esguince",
-      "cat": "Ext. Superior",
-      "label": "Dedo (Esguince/Contusión)",
-      "isFracture": false,
-      "inlineControls": true,
-      "sinonimos": ["falange", "torcedura dedo"],
-      "text": "DEDO ESGUINCE/CONTUSIÓN\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 10 días (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MANO).\n- Férula digital / Embarrilado por 7 días (retirar en casa).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n\n--- CONTROLES ESPECÍFICOS ---\n- Control en convenio escolar en caso de persistir con síntomas por 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "dedo_fx",
-      "cat": "Ext. Superior",
-      "label": "Dedo (Fractura)",
-      "isFracture": true,
-      "sinonimos": ["falange fractura"],
-      "text": "DEDO FRACTURA\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MANO).\n- Férula digital corta dedo medio.\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Control en convenio escolar 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "metacarpianos",
-      "cat": "Ext. Superior",
-      "label": "Metacarpianos (Contusión/Esguince)",
-      "isFracture": false,
-      "sinonimos": ["mano contusion", "palma"],
-      "text": "METACARPIANOS (Contusión / Esguince)\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Reposo deportivo por 14 días (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN MANO).\n- Uso de muñequera por 10 días (retirar en casa)."
-    },
-    {
-      "id": "muneca_esguince",
-      "cat": "Ext. Superior",
-      "label": "Muñeca (Esguince)",
-      "isFracture": false,
-      "inlineControls": true,
-      "sinonimos": ["torcedura muñeca", "wrist"],
-      "text": "MUÑECA ESGUINCE\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 10 días (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MUÑECA-MANO).\n- Inmovilizador de muñeca / Tubigrip por 7 días (retirar en casa).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n\n--- CONTROLES ESPECÍFICOS ---\n- Control en convenio escolar en caso de persistir con síntomas por 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "muneca_fx",
-      "cat": "Ext. Superior",
-      "label": "Muñeca (Fractura)",
-      "isFracture": true,
-      "sinonimos": ["fractura muñeca", "colles"],
-      "text": "MUÑECA FRACTURA\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes (SIN EDUCACIÓN FÍSICA NI ACTIVIDADES QUE INVOLUCREN OCUPAR MUÑECA-MANO).\n- Inmovilizador de muñeca / Tubigrip por 7 días (retirar en casa).\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Control en convenio escolar 2 / 3 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "antebrazo_fx",
-      "cat": "Ext. Superior",
-      "label": "Antebrazo (Fractura)",
-      "isFracture": true,
-      "sinonimos": ["radio", "cubito", "ulna"],
-      "text": "ANTEBRAZO FRACTURA\n- Mano en alto, no usar mano.\n- Puede ir a clases de oyente (SIN ESCRIBIR).\n- Reposo deportivo por 1 mes.\n- Yeso BP: no mojar ni manipular.\n- Control en convenio escolar 2 / 3 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "lumbago",
-      "cat": "Columna",
-      "label": "Lumbago Mecánico",
-      "isFracture": false,
-      "noMeds": true,
-      "sinonimos": ["dolor lumbar", "espalda baja"],
-      "text": "LUMBAGO MECANICO\n- Reposo relativo.\n- Calor local 10–15 min c/4 h por 3 días.\n- Control con Traumatólogo Columna (Dr. Reyes / Dr. Santelices)."
-    },
-    {
-      "id": "rodilla_esguince",
-      "cat": "Ext. Inferior",
-      "label": "Esguince Rodilla",
-      "isFracture": false,
-      "sinonimos": ["torcedura rodilla", "knee"],
-      "text": "RODILLA ESGUINCE\n- Reposo en casa 2 días con pierna en alto.\n- Reposo deportivo por 10 días.\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Tubigrip / Inmovilizador de rodilla por 7 días (retirar en domicilio)."
-    },
-    {
-      "id": "rodilla_trauma",
-      "cat": "Ext. Inferior",
-      "label": "Rodilla Traumática Aguda",
-      "isFracture": false,
-      "sinonimos": ["golpe rodilla", "contusion rodilla"],
-      "text": "RODILLA TRAUMATICA AGUDA\n- Reposo en casa 7 días con pierna en alto.\n- Reposo deportivo hasta control.\n- Frio local protegido, 10 min cada 4 hrs por 2 días.\n- Inmovilizador de rodilla: Retirar para higiene.\n- Control en convenio escolar 1 semana."
-    },
-    {
-      "id": "tobillo_esguince_1",
-      "cat": "Ext. Inferior",
-      "label": "Esguince Tobillo G1",
-      "isFracture": false,
-      "kinesio": true,
-      "sinonimos": ["torcedura tobillo", "ankle"],
-      "text": "TOBILLO ESGUINCE LEVE (GRADO 1)\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo por 10 días.\n- Tubigrip / Tobillera por 7 días (retirar en domicilio).\n- Frio local protegido, 10 min cada 4-6 hrs por 2 días."
-    },
-    {
-      "id": "tobillo_esguince_2",
-      "cat": "Ext. Inferior",
-      "label": "Esguince Tobillo G2",
-      "isFracture": false,
-      "kinesio": true,
-      "sinonimos": ["torcedura tobillo grado 2"],
-      "text": "TOBILLO ESGUINCE MODERADO (GRADO 2)\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo por 10 días.\n- Bota inmovilizadora por 7 días (retirar en domicilio).\n- Frio local protegido, 10 min cada 4-6 hrs por 2 días."
-    },
-    {
-      "id": "tobillo_fx",
-      "cat": "Ext. Inferior",
-      "label": "Fractura Tobillo",
-      "isFracture": true,
-      "sinonimos": ["fractura maleolar"],
-      "text": "TOBILLO FRACTURA\n- Reposo en casa con pierna en alto por 2 días.\n- Reposo deportivo hasta nueva indicación médica.\n- Bota inmovilizadora: sacar para higiene y al dormir.\n- Frio local protegido, 10 min cada 4-6 hrs por 2 días.\n- Control en convenio escolar en 2 semanas (solicitar hora antes).\n- Control en Servicio de Urgencia en caso de necesidad."
-    },
-    {
-      "id": "contusion",
-      "cat": "Otros",
-      "label": "Contusión / Golpe Leve",
-      "isFracture": false,
-      "sinonimos": ["golpe", "moreton"],
-      "text": "CONTUSION / GOLPE LEVE\n- Reposo deportivo por 1 semana.\n- Frio local protegido, 10 min cada 4 hrs por 2 días."
-    },
-    {
-      "id": "suturas",
-      "cat": "Otros",
-      "label": "Herida / Sutura",
-      "isFracture": false,
-      "noMeds": true,
-      "inlineControls": true,
-      "sinonimos": ["corte", "puntos"],
-      "text": "HERIDA / SUTURA\n- Reposo relativo, evitar esfuerzo físico por 7 días.\n- No mojar apósitos ni manipular vendaje.\n- Curación por enfermería en convenio escolar en 48hrs (control por enfermería).\n- Control médico en 7 días / Retiro de puntos.\n- Revisar Vacuna Antitetánica (especialmente si es herida con fierro o profunda).\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."
-    },
-    {
-      "id": "mordedura",
-      "cat": "Otros",
-      "label": "Mordedura / Infección",
-      "isFracture": false,
-      "needsAntibiotic": true,
-      "inlineControls": true,
-      "sinonimos": ["mordida", "perro", "gato", "infeccion herida"],
-      "text": "MORDEDURA / INFECCION\n- Reposo relativo, evitar esfuerzo físico por 7 días.\n- No mojar apósitos ni manipular vendaje.\n- Curación por enfermería en convenio escolar en 48hrs (control por enfermería).\n- Control médico en 7 días / Retiro de puntos.\n- Revisar Vacuna Antitetánica y Antirrábica según protocolo local.\n- Acudir a urgencia si hay fiebre, aumento de eritema, calor local, dolor o secreción."
-    },
-    {
-      "id": "rx_normal",
-      "cat": "Otros",
-      "label": "RX Normal (Lipotimia/No trauma)",
-      "isFracture": false,
-      "noMeds": true,
-      "sinonimos": ["radiografia normal"],
-      "text": "RX NORMAL\n- Rx: No se aprecian signos sugerentes de lesión ósea aguda traumática.\n- Se sugiere consultar bajo su previsión lo antes posible por su cuadro médico que no corresponde a trauma (lipotimia)."
-    },
-    {
-      "id": "kinesio_tobillo",
-      "cat": "Kinesiología",
-      "label": "Kinesiología - Esguince Tobillo/Tendinopatía",
-      "isFracture": false,
-      "noMeds": true,
-      "sinonimos": ["fisioterapia", "rehabilitacion"],
-      "text": "Kinesioterapia motora x 10 sesiones:\n- Evaluación inicial.\n- Fisioterapia (US / UT / TENS).\n- Ejercicios terapéuticos, fortalecimiento TP/TTP, CHC, masoterapia y propiocepción.\n- Pauta domiciliaria."
-    }
-  ],
-  "formularioAdulto": {
-    "ANALGESICOS_AINES": [
-      "- Paracetamol 500 mg: 2 comprimidos cada 8 horas por 5 días.",
-      "- Ibuprofeno 400 mg: 1 comprimido cada 8 horas por 5 días.",
-      "- Celecoxib (Celedox, Celebra) 200 mg: 1 comprimido cada 12 horas por 5-7 días.",
-      "- Diclofenaco 25–50 mg: 1 comprimido cada 8 horas por 3 días.",
-      "- Xumadol 1 g: 1 comprimido cada 12 horas por 7 días.",
-      "- Doloten: 1 comprimido cada 8 horas por 7 días.",
-      "- Talflex 100mg: 1 comprimido cada 12 horas por 5 días.",
-      "- Talflex bi 150 mg: 1 comprimido cada 24 horas por 5 días.",
-      "- Kitadol 1 g: 1 comprimido cada 8 horas por 7 días.",
-      "- Ketorolaco 30mg: 1 comprimido sublingual SOS dolor agudo (con comidas).",
-      "- Tensiomax 5mg: 1 comprimido cada noche por 3 noches.",
-      "- Adorlan (25/25): 1 comp. cada 8 horas por 7 días, luego SOS."
-    ],
-    "ANTIBIOTICOS": [
-      "- Amoxicilina / Ácido clavulánico 875/125 mg: 1 comp. c/12 horas por 7 días.",
-      "- Cefadroxilo 500 mg: 1 comp. c/12 horas por 7 días (Alternativa)."
-    ],
-    "OTROS": [
-      "- Omeprazol 20 mg: 1 comp. al día por 7–30 días (Protector gástrico).",
-      "- Medrol 16 mg: 2 comp. en la mañana cada 24 h por 7 días (Corticoides).",
-      "- Prestat 75 mg: 1 comp. nocturno por 10 días (Dolor neuropático).",
-      "- Burten SL 30 mg: 1 comp. cada 12 horas por 2 días (Relajante muscular).",
-      "- Cortiprex 20 mg: 1 comp. c/12 horas por 5 días (luego suspender) (Corticoides)."
-    ]
-  },
-  "medicamentosPediatricos": {
-    "PARACETAMOL": {
-      "dosis_calculo": 15,
-      "rango_texto": "10-15",
-      "frecuencia_dosis": 8,
-      "susp_120_5ml": 120,
-      "susp_160_5ml": 160,
-      "gotas_100_ml": 100
-    },
-    "IBUPROFENO": {
-      "dosis_calculo": 10,
-      "rango_texto": "5-10",
-      "frecuencia_dosis": 8,
-      "susp_200_5ml": 200,
-      "susp_100_5ml": 100
-    },
-    "AMOXICLAV": {
-      "dosis_dia": 80,
-      "frecuencia_dia": 3,
-      "presentaciones_susp": [
-        { "amoxi_mg": 250, "volumen": 5, "nombre": "62,5/250 por 5ml" },
-        { "amoxi_mg": 500, "volumen": 5, "nombre": "125/500 por 5ml" },
-        { "amoxi_mg": 600, "volumen": 5, "nombre": "42,9/600 por 5ml (Alto ratio)" }
-      ]
-    },
-    "CEFADROXILO": {
-      "dosis_dia": 50,
-      "frecuencia_dia": 2,
-      "presentacion_susp": { "mg": 250, "volumen": 5, "nombre": "250mg/5ml" }
-    }
+  try {
+    STATE.data = EMBEDDED_DATA;
+    STATE.protocolos = STATE.data.protocolos;
+  } catch (e) {
+    document.getElementById('app-status').innerHTML =
+      '<div class="alert" style="color:var(--danger)">Error: ' + e.message + '</div>';
+    throw e;
   }
 }
-;
 
-// ======================== BÚSQUEDA INTELIGENTE ========================
-
-/**
- * Normaliza texto: minúsculas, sin acentos, sin caracteres especiales
- */
+// ======================== UTILIDADES ========================
 function normalize(str) {
   return (str || '')
     .toLowerCase()
@@ -708,9 +612,6 @@ function normalize(str) {
     .trim();
 }
 
-/**
- * Calcula distancia de Levenshtein (para tolerancia a typos)
- */
 function levenshtein(a, b) {
   if (a === b) return 0;
   if (!a.length) return b.length;
@@ -721,35 +622,23 @@ function levenshtein(a, b) {
   for (let i = 1; i <= b.length; i++) {
     for (let j = 1; j <= a.length; j++) {
       const cost = b.charAt(i - 1) === a.charAt(j - 1) ? 0 : 1;
-      matrix[i][j] = Math.min(
-        matrix[i - 1][j] + 1,
-        matrix[i][j - 1] + 1,
-        matrix[i - 1][j - 1] + cost
-      );
+      matrix[i][j] = Math.min(matrix[i - 1][j] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j - 1] + cost);
     }
   }
   return matrix[b.length][a.length];
 }
 
-/**
- * Puntúa coincidencia entre query y protocolo.
- * Más alto = mejor coincidencia. 0 = sin coincidencia.
- */
 function scoreMatch(queryNorm, proto) {
-  if (!queryNorm) return 1; // sin query, todos pasan
+  if (!queryNorm) return 1;
   const haystack = normalize(`${proto.label} ${proto.cat} ${(proto.sinonimos || []).join(' ')}`);
   const queryWords = queryNorm.split(' ').filter(Boolean);
   let totalScore = 0;
-
   for (const qw of queryWords) {
     let bestWordScore = 0;
-    // Coincidencia exacta de substring (mejor)
     if (haystack.includes(qw)) {
       bestWordScore = qw.length >= 4 ? 100 : 80;
-      // Bonus si está al inicio del label
       if (normalize(proto.label).startsWith(qw)) bestWordScore += 50;
     } else if (qw.length >= 4) {
-      // Tolerancia a typos: buscar palabra similar
       const words = haystack.split(' ');
       for (const w of words) {
         if (Math.abs(w.length - qw.length) > 2) continue;
@@ -761,15 +650,12 @@ function scoreMatch(queryNorm, proto) {
         }
       }
     }
-    if (bestWordScore === 0) return 0; // si una palabra no matchea, descarta
+    if (bestWordScore === 0) return 0;
     totalScore += bestWordScore;
   }
   return totalScore;
 }
 
-/**
- * Resalta coincidencias en el texto mostrado (HTML seguro)
- */
 function highlightMatches(text, queryNorm) {
   if (!queryNorm) return escapeHtml(text);
   const queryWords = queryNorm.split(' ').filter(w => w.length >= 2);
@@ -782,38 +668,24 @@ function highlightMatches(text, queryNorm) {
 }
 
 function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-// ======================== RENDERIZADO DE LISTA ========================
+// ======================== RENDERIZADO LISTA PROTOCOLOS ========================
 function renderList(query = '') {
   const list = document.getElementById('protocol-list');
   const queryNorm = normalize(query);
 
-  // Calcular scores y filtrar
   const scored = STATE.protocolos
     .map(p => ({ proto: p, score: scoreMatch(queryNorm, p) }))
     .filter(x => x.score > 0);
-
-  // Ordenar por score descendente, luego alfabético
   scored.sort((a, b) => b.score - a.score || a.proto.label.localeCompare(b.proto.label));
-
   STATE.filteredList = scored.map(x => x.proto);
 
-  // Construir secciones: si hay query, solo lista plana ordenada por relevancia
-  // Si NO hay query, mostrar Favoritos + Más usados + Todos por categoría
   let html = '';
 
   if (!queryNorm) {
-    // === Sección Favoritos ===
     const favProtos = STATE.favorites
       .map(id => STATE.protocolos.find(p => p.id === id))
       .filter(Boolean);
@@ -822,7 +694,6 @@ function renderList(query = '') {
       html += favProtos.map(p => itemHtml(p, queryNorm)).join('');
     }
 
-    // === Sección Más usados ===
     const usedIds = Object.keys(STATE.usageCount)
       .filter(id => !STATE.favorites.includes(id))
       .sort((a, b) => STATE.usageCount[b] - STATE.usageCount[a])
@@ -833,7 +704,6 @@ function renderList(query = '') {
       html += usedProtos.map(p => itemHtml(p, queryNorm)).join('');
     }
 
-    // === Sección Todos (sin duplicar favoritos/usados) ===
     const shownIds = new Set([...STATE.favorites, ...usedIds]);
     const others = STATE.filteredList.filter(p => !shownIds.has(p.id));
     if (others.length > 0) {
@@ -843,7 +713,6 @@ function renderList(query = '') {
       html += others.map(p => itemHtml(p, queryNorm)).join('');
     }
   } else {
-    // Con búsqueda: lista plana ordenada por relevancia
     if (STATE.filteredList.length === 0) {
       html = `<div class="empty-state">Sin coincidencias para "${escapeHtml(query)}"</div>`;
     } else {
@@ -853,7 +722,6 @@ function renderList(query = '') {
 
   list.innerHTML = html;
 
-  // Reaplicar selección si corresponde
   STATE.selectedIndex = -1;
   if (STATE.selectedId) {
     const idx = STATE.filteredList.findIndex(p => p.id === STATE.selectedId);
@@ -873,7 +741,7 @@ function itemHtml(proto, queryNorm) {
         <div class="item-cat">${escapeHtml(proto.cat)}</div>
         <div class="item-label">${highlightMatches(proto.label, queryNorm)}</div>
       </div>
-      <button class="fav-star ${isFav ? 'active' : ''}" data-fav="${proto.id}" title="Marcar como favorito" aria-label="Favorito">
+      <button class="fav-star ${isFav ? 'active' : ''}" data-fav="${proto.id}" title="Favorito" aria-label="Favorito">
         ${isFav ? '★' : '☆'}
       </button>
     </div>`;
@@ -883,9 +751,61 @@ function highlightSelected() {
   document.querySelectorAll('.protocol-item').forEach(el => {
     el.classList.toggle('selected', el.dataset.id === STATE.selectedId);
   });
-  // Scroll into view
   const sel = document.querySelector('.protocol-item.selected');
   if (sel) sel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// ======================== RENDERIZADO COMBOS FARMACOLÓGICOS ========================
+function renderCombos() {
+  const grid = document.getElementById('combos-grid');
+  const combos = STATE.data.combosFarmacologicos.adulto;
+  grid.innerHTML = combos.map(c => `
+    <div class="combo-card ${STATE.selectedCombo === c.id ? 'selected' : ''}" data-combo="${c.id}">
+      <div class="combo-label">${escapeHtml(c.label)}</div>
+      <div class="combo-desc">${escapeHtml(c.descripcion)}</div>
+    </div>
+  `).join('');
+}
+
+function toggleComboVisibility() {
+  const peso = parseFloat(document.getElementById('peso').value);
+  const protocolo = STATE.selectedId ? STATE.protocolos.find(p => p.id === STATE.selectedId) : null;
+  const section = document.getElementById('combos-section');
+
+  // Mostrar combos solo si: paciente adulto + protocolo seleccionado + el protocolo permite meds
+  const debeMostrar = peso >= 40 && protocolo && !protocolo.noMeds;
+  section.classList.toggle('hidden', !debeMostrar);
+}
+
+// ======================== RENDERIZADO MÓDULOS EXTRA ========================
+function renderHospi() {
+  const cont = document.getElementById('hospi-buttons');
+  const hospi = STATE.data.hospitalizacion;
+  cont.innerHTML = Object.entries(hospi).map(([id, h]) => `
+    <button class="module-btn ${STATE.selectedHospi === id ? 'active' : ''}" data-hospi="${id}">
+      ${escapeHtml(h.label)}
+    </button>
+  `).join('');
+}
+
+function renderSutura() {
+  const cont = document.getElementById('sutura-buttons');
+  const sutura = STATE.data.sutura;
+  cont.innerHTML = Object.entries(sutura).map(([id, s]) => `
+    <button class="module-btn ${STATE.selectedSutura.includes(id) ? 'active' : ''}" data-sutura="${id}">
+      ${escapeHtml(s.label)}
+    </button>
+  `).join('');
+}
+
+function renderEV() {
+  const cont = document.getElementById('ev-buttons');
+  const ev = STATE.data.analgesiaEV;
+  cont.innerHTML = Object.entries(ev).map(([id, e]) => `
+    <button class="module-btn ${STATE.selectedEV === id ? 'active' : ''}" data-ev="${id}">
+      ${escapeHtml(e.label)}
+    </button>
+  `).join('');
 }
 
 // ======================== CÁLCULO DE MEDICAMENTOS ========================
@@ -895,7 +815,6 @@ function getAntibioticsPediatric(peso) {
   const C = meds.CEFADROXILO;
 
   let r = `INDICACIÓN ANTIBIÓTICA (PEDIÁTRICO - ${peso} kg):\n-------------------------------------------\n`;
-
   r += `1. Amoxicilina / Ácido clavulánico (Opción Principal):\n`;
   const dosisDiariaAC = AC.dosis_dia * peso;
   const dosisTomaAC = Math.round(dosisDiariaAC / AC.frecuencia_dia);
@@ -915,60 +834,50 @@ function getAntibioticsPediatric(peso) {
   const concC = C.presentacion_susp.mg / C.presentacion_susp.volumen;
   const mlC = Math.round((dosisTomaC / concC) * 10) / 10;
   r += `      - Suspensión ${C.presentacion_susp.nombre}: **${mlC} ml** c/12 hrs VO por 7 días.\n`;
-
   return r;
 }
 
-function getMedicamentos(peso) {
-  const esPediatrico = peso > 0 && peso < 40;
+function getMedicamentosPediatrico(peso) {
   const meds = STATE.data.medicamentosPediatricos;
+  const P = meds.PARACETAMOL;
+  const I = meds.IBUPROFENO;
+  let r = `INDICACIÓN FARMACÉUTICA (PEDIÁTRICO - ${peso} kg):\n-------------------------------------------\n`;
 
-  if (esPediatrico) {
-    const P = meds.PARACETAMOL;
-    const I = meds.IBUPROFENO;
-    let r = `INDICACIÓN FARMACÉUTICA (PEDIÁTRICO - ${peso} kg):\n-------------------------------------------\n`;
+  const dosisP = P.dosis_calculo * peso;
+  r += `1. Paracetamol (Dosis: ${P.rango_texto} mg/kg/dosis - Calculada a ${P.dosis_calculo} mg/kg):\n`;
+  r += `   - Dosis por toma: ${Math.round(dosisP)} mg c/${P.frecuencia_dosis} hrs.\n`;
+  const ml120 = Math.round((dosisP / (P.susp_120_5ml / 5)) * 10) / 10;
+  r += `   - Suspensión 120mg/5ml: **${ml120} ml** c/${P.frecuencia_dosis} hrs VO por 5 días.\n`;
+  const ml160 = Math.round((dosisP / (P.susp_160_5ml / 5)) * 10) / 10;
+  r += `   - Suspensión 160mg/5ml: **${ml160} ml** c/${P.frecuencia_dosis} hrs VO por 5 días. (Opción alternativa)\n`;
+  const mlGotas = Math.round((dosisP / P.gotas_100_ml) * 10) / 10;
+  const gotas = Math.round(mlGotas * 20);
+  r += `   - Gotas 100mg/ml: **${gotas} gotas** (${mlGotas} ml) c/${P.frecuencia_dosis} hrs VO.\n\n`;
 
-    const dosisP = P.dosis_calculo * peso;
-    r += `1. Paracetamol (Dosis: ${P.rango_texto} mg/kg/dosis - Calculada a ${P.dosis_calculo} mg/kg):\n`;
-    r += `   - Dosis por toma: ${Math.round(dosisP)} mg c/${P.frecuencia_dosis} hrs.\n`;
+  const dosisI = I.dosis_calculo * peso;
+  r += `2. Ibuprofeno (Dosis: ${I.rango_texto} mg/kg/dosis - Calculada a ${I.dosis_calculo} mg/kg):\n`;
+  r += `   - Dosis por toma: ${Math.round(dosisI)} mg c/${I.frecuencia_dosis} hrs.\n`;
+  const ml200 = Math.round((dosisI / (I.susp_200_5ml / 5)) * 10) / 10;
+  r += `   - Suspensión 200mg/5ml (Forte): **${ml200} ml** c/${I.frecuencia_dosis} hrs VO por 3 días. (Opción alternativa)\n`;
+  const ml100 = Math.round((dosisI / (I.susp_100_5ml / 5)) * 10) / 10;
+  r += `   - Suspensión 100mg/5ml (Estándar): **${ml100} ml** c/${I.frecuencia_dosis} hrs VO por 3 días.\n`;
+  r += `\n--- ADVERTENCIA: Usar Paracetamol e Ibuprofeno de forma alternada (separados por 4 horas) en caso de dolor persistente. ---`;
+  return r;
+}
 
-    const ml120 = Math.round((dosisP / (P.susp_120_5ml / 5)) * 10) / 10;
-    r += `   - Suspensión 120mg/5ml: **${ml120} ml** c/${P.frecuencia_dosis} hrs VO por 5 días.\n`;
-    const ml160 = Math.round((dosisP / (P.susp_160_5ml / 5)) * 10) / 10;
-    r += `   - Suspensión 160mg/5ml: **${ml160} ml** c/${P.frecuencia_dosis} hrs VO por 5 días. (Opción alternativa)\n`;
-    const mlGotas = Math.round((dosisP / P.gotas_100_ml) * 10) / 10;
-    const gotas = Math.round(mlGotas * 20);
-    r += `   - Gotas 100mg/ml: **${gotas} gotas** (${mlGotas} ml) c/${P.frecuencia_dosis} hrs VO.\n\n`;
-
-    const dosisI = I.dosis_calculo * peso;
-    r += `2. Ibuprofeno (Dosis: ${I.rango_texto} mg/kg/dosis - Calculada a ${I.dosis_calculo} mg/kg):\n`;
-    r += `   - Dosis por toma: ${Math.round(dosisI)} mg c/${I.frecuencia_dosis} hrs.\n`;
-    const ml200 = Math.round((dosisI / (I.susp_200_5ml / 5)) * 10) / 10;
-    r += `   - Suspensión 200mg/5ml (Forte): **${ml200} ml** c/${I.frecuencia_dosis} hrs VO por 3 días. (Opción alternativa)\n`;
-    const ml100 = Math.round((dosisI / (I.susp_100_5ml / 5)) * 10) / 10;
-    r += `   - Suspensión 100mg/5ml (Estándar): **${ml100} ml** c/${I.frecuencia_dosis} hrs VO por 3 días.\n`;
-    r += `\n--- ADVERTENCIA: Usar Paracetamol e Ibuprofeno de forma alternada (separados por 4 horas) en caso de dolor persistente. ---`;
-    return r;
-  }
-
-  if (peso >= 40) {
-    const f = STATE.data.formularioAdulto;
-    let r = `INDICACIÓN FARMACÉUTICA (ADULTO - ${peso} kg):\n-------------------------------------------\n`;
-    r += `- - - ANALGÉSICOS / ANTIINFLAMATORIOS - - -\n`;
-    r += f.ANALGESICOS_AINES.join('\n') + '\n';
-    r += `- - - OTROS MEDICAMENTOS DE APOYO - - -\n`;
-    r += f.OTROS.join('\n');
-    return r;
-  }
-
-  return `[INGRESE PESO PARA VER DOSIS DE MEDICAMENTOS]`;
+function getComboAdulto(peso) {
+  if (!STATE.selectedCombo) return null;
+  const combo = STATE.data.combosFarmacologicos.adulto.find(c => c.id === STATE.selectedCombo);
+  if (!combo) return null;
+  let r = `INDICACIÓN FARMACÉUTICA (ADULTO - ${peso} kg) - ${combo.label.toUpperCase()}:\n-------------------------------------------\n`;
+  r += combo.items.join('\n');
+  return r;
 }
 
 // ======================== GENERACIÓN DE TEXTO ========================
 function generarTexto() {
   const peso = parseFloat(document.getElementById('peso').value);
   const nombre = document.getElementById('nombre').value;
-  const idProto = STATE.selectedId;
   const modoIndicator = document.getElementById('modo-indicator');
   const resultadoTextarea = document.getElementById('resultado');
 
@@ -976,61 +885,104 @@ function generarTexto() {
   if (!peso || peso <= 0) {
     modoIndicator.innerHTML = 'Ingrese peso para calcular medicamentos.';
   } else if (peso < 40) {
-    modoIndicator.innerHTML = `<span class="mode-badge pedia">Modo Pediátrico</span> Calculando dosis de Paracetamol 15mg/kg e Ibuprofeno 10mg/kg.`;
+    modoIndicator.innerHTML = `<span class="mode-badge pedia">Modo Pediátrico</span> Cálculos automáticos: Paracetamol 15mg/kg, Ibuprofeno 10mg/kg.`;
   } else {
-    modoIndicator.innerHTML = `<span class="mode-badge adult">Modo Adulto</span> Cargando formulario completo de medicamentos.`;
+    modoIndicator.innerHTML = `<span class="mode-badge adult">Modo Adulto</span> Selecciona un combo farmacológico para personalizar el tratamiento.`;
   }
 
-  if (!idProto) {
-    resultadoTextarea.value = 'Seleccione un protocolo para generar las indicaciones.';
+  toggleComboVisibility();
+
+  // Cabecera común
+  let texto = '';
+  if (nombre || peso) {
+    texto += `PACIENTE: ${nombre || '___________________'}\n`;
+    if (peso) texto += `PESO: ${peso} kg\n`;
+    texto += `FECHA: ${new Date().toLocaleDateString()}\n`;
+    texto += `---------------------------------------------------\n`;
+  }
+
+  let bloques = [];
+
+  // === BLOQUE 1: PATOLOGÍA ===
+  if (STATE.selectedId) {
+    const protocolo = STATE.protocolos.find(p => p.id === STATE.selectedId);
+    if (protocolo) {
+      let bloque = protocolo.text + '\n';
+
+      // Antibióticos para mordedura
+      if (STATE.selectedId === 'mordedura' && peso > 0) {
+        bloque += '\n===================================================\n';
+        bloque += 'INDICACIÓN DE ANTIBIÓTICO PARA MORDEDURAS/HERIDAS:\n';
+        if (peso < 40) {
+          bloque += getAntibioticsPediatric(peso);
+        } else {
+          bloque += STATE.data.formularioAdulto.ANTIBIOTICOS.join('\n');
+        }
+        bloque += '\n';
+      }
+
+      // Kinesioterapia para esguinces de tobillo
+      if (protocolo.kinesio) {
+        const kine = STATE.protocolos.find(p => p.id === 'kinesio_tobillo');
+        if (kine) {
+          bloque += '\n===================================================\n';
+          bloque += 'SOLICITUD DE KINESIOTERAPIA ASOCIADA:\n';
+          bloque += kine.text + '\n';
+        }
+      }
+
+      // Medicamentos
+      if (!protocolo.noMeds && peso > 0 && STATE.selectedId !== 'mordedura') {
+        bloque += '\n---------------------------------------------------\n';
+        if (peso < 40) {
+          bloque += getMedicamentosPediatrico(peso);
+        } else {
+          // Adulto: usar combo seleccionado o mensaje
+          const comboTexto = getComboAdulto(peso);
+          if (comboTexto) {
+            bloque += comboTexto;
+          } else {
+            bloque += '[Selecciona un combo farmacológico arriba para incluir medicamentos]';
+          }
+        }
+        bloque += '\n';
+      }
+
+      // Footer estándar
+      if (protocolo.isFracture === false && !PROTOCOLS_WITH_INLINE_CONTROLS.includes(STATE.selectedId) && !protocolo.inlineControls) {
+        bloque += FOOTER_NO_FRACTURE;
+      }
+
+      bloques.push(bloque);
+    }
+  }
+
+  // === BLOQUE 2: HOSPITALIZACIÓN ===
+  if (STATE.selectedHospi) {
+    const h = STATE.data.hospitalizacion[STATE.selectedHospi];
+    if (h) bloques.push(h.text);
+  }
+
+  // === BLOQUE 3: SUTURA ===
+  if (STATE.selectedSutura.length > 0) {
+    STATE.selectedSutura.forEach(id => {
+      const s = STATE.data.sutura[id];
+      if (s) bloques.push(s.text);
+    });
+  }
+
+  // === BLOQUE 4: ANALGESIA EV ===
+  if (STATE.selectedEV) {
+    const e = STATE.data.analgesiaEV[STATE.selectedEV];
+    if (e) bloques.push(e.text);
+  }
+
+  if (bloques.length === 0) {
+    resultadoTextarea.value = 'Selecciona una patología, esquema de hospitalización, sutura o analgesia EV para generar las indicaciones.';
     return;
   }
 
-  const protocolo = STATE.protocolos.find(p => p.id === idProto);
-  if (!protocolo) return;
-
-  const esPediatrico = peso > 0 && peso < 40;
-  const esAdulto = peso >= 40;
-
-  let texto = `PACIENTE: ${nombre || '___________________'}\n`;
-  if (peso) texto += `PESO: ${peso} kg\n`;
-  texto += `FECHA: ${new Date().toLocaleDateString()}\n`;
-  texto += `---------------------------------------------------\n`;
-  texto += protocolo.text + '\n\n';
-
-  // Antibióticos para mordedura
-  if (idProto === 'mordedura' && peso > 0) {
-    texto += '===================================================\n';
-    texto += 'INDICACIÓN DE ANTIBIÓTICO PARA MORDEDURAS/HERIDAS:\n';
-    if (esPediatrico) {
-      texto += getAntibioticsPediatric(peso);
-    } else if (esAdulto) {
-      texto += STATE.data.formularioAdulto.ANTIBIOTICOS.join('\n');
-    }
-    texto += '\n';
-  }
-
-  // Kinesioterapia para esguinces de tobillo
-  if (protocolo.kinesio) {
-    const kine = STATE.protocolos.find(p => p.id === 'kinesio_tobillo');
-    if (kine) {
-      texto += '===================================================\n';
-      texto += 'SOLICITUD DE KINESIOTERAPIA ASOCIADA:\n';
-      texto += kine.text + '\n\n';
-    }
-  }
-
-  // Medicamentos generales (si aplica)
-  if (!protocolo.noMeds && peso > 0 && idProto !== 'mordedura') {
-    texto += '---------------------------------------------------\n';
-    texto += getMedicamentos(peso) + '\n';
-  }
-
-  // Footer estándar para no fracturas sin controles inline
-  if (protocolo.isFracture === false && !PROTOCOLS_WITH_INLINE_CONTROLS.includes(idProto) && !protocolo.inlineControls) {
-    texto += FOOTER_NO_FRACTURE;
-  }
-
+  texto += bloques.join('\n===================================================\n\n');
   resultadoTextarea.value = texto;
 }
 
@@ -1056,9 +1008,48 @@ function toggleFavorite(id) {
   renderList(document.getElementById('buscador').value);
 }
 
+function selectCombo(id) {
+  STATE.selectedCombo = STATE.selectedCombo === id ? null : id;
+  renderCombos();
+  generarTexto();
+}
+
+function selectHospi(id) {
+  STATE.selectedHospi = STATE.selectedHospi === id ? null : id;
+  renderHospi();
+  generarTexto();
+}
+
+function selectSutura(id) {
+  const idx = STATE.selectedSutura.indexOf(id);
+  if (idx >= 0) STATE.selectedSutura.splice(idx, 1);
+  else STATE.selectedSutura.push(id);
+  renderSutura();
+  generarTexto();
+}
+
+function selectEV(id) {
+  STATE.selectedEV = STATE.selectedEV === id ? null : id;
+  // Si es EV pediátrico, calcular dosis al vuelo
+  if (STATE.selectedEV === 'pediatrica') {
+    const peso = parseFloat(document.getElementById('peso').value);
+    if (peso > 0 && peso < 40) {
+      // Reemplazar el texto con cálculo personalizado
+      const baseText = STATE.data.analgesiaEV.pediatrica.text;
+      const dosisPara = Math.round(15 * peso);
+      const dosisKeto = Math.min(Math.round(0.5 * peso), 30);
+      const dosisDipi = Math.round(30 * peso);
+      // No modificamos el JSON, solo agregamos cálculo en el texto generado
+      // (la lógica está en generarTexto)
+    }
+  }
+  renderEV();
+  generarTexto();
+}
+
 function copiarTexto() {
   const ta = document.getElementById('resultado');
-  if (!ta.value || ta.value.startsWith('Seleccione')) {
+  if (!ta.value || ta.value.startsWith('Selecciona')) {
     showToast('No hay nada que copiar');
     return;
   }
@@ -1066,7 +1057,6 @@ function copiarTexto() {
     showToast('📋 Copiado al portapapeles');
     addToHistory(ta.value);
   }).catch(() => {
-    // Fallback para navegadores antiguos
     ta.select();
     document.execCommand('copy');
     showToast('📋 Copiado');
@@ -1080,18 +1070,31 @@ function limpiar() {
   document.getElementById('buscador').value = '';
   document.getElementById('resultado').value = '';
   STATE.selectedId = null;
+  STATE.selectedCombo = null;
+  STATE.selectedHospi = null;
+  STATE.selectedSutura = [];
+  STATE.selectedEV = null;
   renderList('');
+  renderCombos();
+  renderHospi();
+  renderSutura();
+  renderEV();
   generarTexto();
   document.getElementById('buscador').focus();
 }
 
 function addToHistory(texto) {
-  const proto = STATE.protocolos.find(p => p.id === STATE.selectedId);
+  let label = 'Indicaciones';
+  if (STATE.selectedId) {
+    const proto = STATE.protocolos.find(p => p.id === STATE.selectedId);
+    if (proto) label = proto.label;
+  } else if (STATE.selectedHospi) label = 'Hospitalización';
+  else if (STATE.selectedSutura.length > 0) label = 'Sutura';
+  else if (STATE.selectedEV) label = 'Analgesia EV';
+
   STATE.history.unshift({
-    id: STATE.selectedId,
-    label: proto ? proto.label : 'Sin protocolo',
+    label,
     timestamp: Date.now(),
-    preview: texto.split('\n').slice(0, 4).join('\n'),
     fullText: texto,
   });
   STATE.history = STATE.history.slice(0, 20);
@@ -1137,11 +1140,24 @@ function applyTheme() {
   document.documentElement.setAttribute('data-theme', STATE.theme);
   document.getElementById('theme-icon').textContent = STATE.theme === 'dark' ? '☀️' : '🌙';
 }
-
 function toggleTheme() {
   STATE.theme = STATE.theme === 'dark' ? 'light' : 'dark';
   saveTheme();
   applyTheme();
+}
+
+// ======================== TABS ========================
+function switchTab(tabName) {
+  STATE.activeTab = tabName;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.toggle('active', content.id === `tab-${tabName}`);
+  });
+  if (tabName === 'patologia') {
+    setTimeout(() => document.getElementById('buscador').focus(), 50);
+  }
 }
 
 // ======================== ATAJOS DE TECLADO ========================
@@ -1149,20 +1165,18 @@ function setupKeyboardShortcuts() {
   const buscador = document.getElementById('buscador');
 
   document.addEventListener('keydown', e => {
-    // Ctrl/Cmd + Enter: copiar
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       copiarTexto();
       return;
     }
-    // Ctrl/Cmd + K o Ctrl/Cmd + F: foco al buscador
     if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'f')) {
       e.preventDefault();
+      switchTab('patologia');
       buscador.focus();
       buscador.select();
       return;
     }
-    // Esc: limpiar (solo si no estamos editando el resultado)
     if (e.key === 'Escape' && document.activeElement.id !== 'resultado') {
       e.preventDefault();
       limpiar();
@@ -1170,13 +1184,10 @@ function setupKeyboardShortcuts() {
     }
   });
 
-  // Navegación con flechas dentro del buscador
   buscador.addEventListener('keydown', e => {
     if (!['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) return;
     e.preventDefault();
-
     if (STATE.filteredList.length === 0) return;
-
     if (e.key === 'ArrowDown') {
       STATE.selectedIndex = Math.min(STATE.selectedIndex + 1, STATE.filteredList.length - 1);
     } else if (e.key === 'ArrowUp') {
@@ -1184,7 +1195,6 @@ function setupKeyboardShortcuts() {
     } else if (e.key === 'Enter') {
       if (STATE.selectedIndex < 0) STATE.selectedIndex = 0;
     }
-
     const proto = STATE.filteredList[STATE.selectedIndex];
     if (proto) selectProtocol(proto.id);
   });
@@ -1192,13 +1202,17 @@ function setupKeyboardShortcuts() {
 
 // ======================== EVENT WIRING ========================
 function setupEventListeners() {
-  document.getElementById('buscador').addEventListener('input', e => {
-    renderList(e.target.value);
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
+  // Inputs
+  document.getElementById('buscador').addEventListener('input', e => renderList(e.target.value));
   document.getElementById('peso').addEventListener('input', generarTexto);
   document.getElementById('nombre').addEventListener('input', generarTexto);
 
+  // Lista de protocolos
   document.getElementById('protocol-list').addEventListener('click', e => {
     const favBtn = e.target.closest('[data-fav]');
     if (favBtn) {
@@ -1210,6 +1224,31 @@ function setupEventListeners() {
     if (item) selectProtocol(item.dataset.id);
   });
 
+  // Combos farmacológicos
+  document.getElementById('combos-grid').addEventListener('click', e => {
+    const card = e.target.closest('[data-combo]');
+    if (card) selectCombo(card.dataset.combo);
+  });
+
+  // Hospitalización
+  document.getElementById('hospi-buttons').addEventListener('click', e => {
+    const btn = e.target.closest('[data-hospi]');
+    if (btn) selectHospi(btn.dataset.hospi);
+  });
+
+  // Sutura
+  document.getElementById('sutura-buttons').addEventListener('click', e => {
+    const btn = e.target.closest('[data-sutura]');
+    if (btn) selectSutura(btn.dataset.sutura);
+  });
+
+  // EV
+  document.getElementById('ev-buttons').addEventListener('click', e => {
+    const btn = e.target.closest('[data-ev]');
+    if (btn) selectEV(btn.dataset.ev);
+  });
+
+  // Botones principales
   document.getElementById('btn-copiar').addEventListener('click', copiarTexto);
   document.getElementById('btn-limpiar').addEventListener('click', limpiar);
   document.getElementById('btn-theme').addEventListener('click', toggleTheme);
@@ -1219,7 +1258,6 @@ function setupEventListeners() {
     e.target.classList.toggle('collapsed');
     document.getElementById('history-panel').classList.toggle('hidden');
   });
-
   document.getElementById('history-panel').addEventListener('click', e => {
     const item = e.target.closest('[data-hist-idx]');
     if (item) loadFromHistory(parseInt(item.dataset.histIdx));
@@ -1232,6 +1270,10 @@ async function init() {
   applyTheme();
   await loadData();
   renderList('');
+  renderCombos();
+  renderHospi();
+  renderSutura();
+  renderEV();
   renderHistory();
   setupEventListeners();
   setupKeyboardShortcuts();
