@@ -1192,7 +1192,12 @@ function generarTexto() {
         if (peso < 40) {
           bloque += getAntibioticsPediatric(peso);
         } else {
-          bloque += STATE.data.formularioAdulto.ANTIBIOTICOS.join('\n');
+          // Adulto: usar combo antibiótico predefinido
+          const comboATB = STATE.data.combosFarmacologicos.adulto.find(c => c.id === 'antibiotico');
+          if (comboATB) {
+            bloque += `-------------------------------------------\n`;
+            bloque += comboATB.items.join('\n');
+          }
         }
         bloque += '\n';
       }
